@@ -2,10 +2,25 @@ import { useEffect, useRef, useState } from "react";
 
 const SnakeGame = () => {
   const CanvasRef = useRef<HTMLCanvasElement>(null);
-  const [CanvasDimentions, setCanvasDimentions] = useState({
-    width: 200,
-    height: 300,
-  });
+  const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
+  const [CanvasWidth, setCanvasWidth] = useState(300);
+
+  let cellSize = CanvasWidth / 16;
+
+  const drawCanvasBg = () => {
+    console.log(ctx);
+    if (!ctx) return;
+
+    for (let x = 0; x < cellSize; x++) {
+      for (let y = 0; y < cellSize; y++) {
+        ctx.fillStyle = "rgb(34,29,42)";
+        ctx.fillRect(x * cellSize, y * cellSize, cellSize, cellSize);
+        ctx.strokeStyle = "rgb(32,42,70)";
+        ctx.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
+      }
+    }
+  };
+  drawCanvasBg();
 
   //   to set canvas width and height based on screen width and height
   useEffect(() => {
@@ -19,14 +34,21 @@ const SnakeGame = () => {
       CanvasRef.current.width = windowHeight - (windowHeight % 10) - 20;
       CanvasRef.current.height = windowHeight - (windowHeight % 10) - 20;
 
+      setCanvasWidth(CanvasRef.current.width);
       console.log("canvas width :- ", CanvasRef.current.width);
     } else {
       if (!CanvasRef.current) return;
       CanvasRef.current.width = windowWidth - (windowWidth % 10) - 20;
       CanvasRef.current.height = windowWidth - (windowWidth % 10) - 20;
 
+      setCanvasWidth(CanvasRef.current.width);
       console.log("canvas width :- ", CanvasRef.current.width);
     }
+  }, []);
+
+  useEffect(() => {
+    const ctx = CanvasRef.current?.getContext("2d");
+    ctx && setCtx(ctx);
   }, []);
 
   return (
@@ -46,8 +68,8 @@ const SnakeGame = () => {
 
         <div className="gameBoard borde self-center border-purple-600">
           <canvas
-            width={CanvasDimentions.width}
-            height={CanvasDimentions.height}
+            width={CanvasWidth}
+            height={CanvasWidth}
             className="border"
             ref={CanvasRef}
           ></canvas>
