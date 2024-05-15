@@ -1,4 +1,10 @@
+import SnakeGame from "./components/layout/SnakeGame";
+
 const App = () => {
-  return <main>app</main>;
+  return (
+    <main>
+      <SnakeGame />
+    </main>
+  );
 };
 export default App;
