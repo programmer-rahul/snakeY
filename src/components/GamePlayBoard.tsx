@@ -2,13 +2,16 @@ import { useEffect, useRef, useState } from "react";
 import { useSnake } from "../context/SnakeContext";
 
 const GamePlayBoard = () => {
+  // context
   const { gameStatus } = useSnake();
 
+  //   states
   const CanvasRef = useRef<HTMLCanvasElement>(null);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
-
   const [CanvasWidth, setCanvasWidth] = useState(300);
+  const [isSnakeRunning, setIsSnakeRunning] = useState(false);
 
+  //   variables
   let cellSize = CanvasWidth / 16;
 
   const drawCanvasBg = () => {
@@ -46,6 +49,13 @@ const GamePlayBoard = () => {
       setCanvasWidth(CanvasRef.current.width);
     }
     //   console.log("canvas width :- ", CanvasRef.current.width);
+
+    // add event listener for user clicks
+    window.addEventListener("keydown", handleUserKeyInput);
+    return () => {
+      window.removeEventListener("keydown", handleUserKeyInput);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   //   to render canvas grid on component load
@@ -60,6 +70,33 @@ const GamePlayBoard = () => {
     }
   }, [context]);
 
+  //   to handle user key input
+  const handleUserKeyInput = (event: KeyboardEvent) => {
+    console.log(event.key);
+    switch (event.key) {
+      case "ArrowUp":
+        gameStatus === "in-progress" &&
+          !isSnakeRunning &&
+          setIsSnakeRunning(true);
+        break;
+      case "ArrowDown":
+        gameStatus === "in-progress" &&
+          !isSnakeRunning &&
+          setIsSnakeRunning(true);
+        break;
+      case "ArrowLeft":
+        gameStatus === "in-progress" &&
+          !isSnakeRunning &&
+          setIsSnakeRunning(true);
+        break;
+      case "ArrowRight":
+        gameStatus === "in-progress" &&
+          !isSnakeRunning &&
+          setIsSnakeRunning(true);
+        break;
+    }
+  };
+
   return (
     <div className="gameScreen flex min-h-screen flex-col justify-between gap-2 border bg-gray-800">
       <div className="scores flex min-h-[50px] w-full justify-between border border-slate-500 p-2">
@@ -73,13 +110,21 @@ const GamePlayBoard = () => {
         </div>
       </div>
 
-      <div className="gameBoard borde self-center border-purple-600">
+      <div className="gameBoard relative self-center border border-purple-600">
         <canvas
           width={CanvasWidth}
           height={CanvasWidth}
           className="border"
           ref={CanvasRef}
         ></canvas>
+        {!isSnakeRunning && (
+          <div
+            className="presskeytostart absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-semibold text-slate-200"
+            style={{ whiteSpace: "nowrap" }}
+          >
+            Press control keys to start
+          </div>
+        )}
       </div>
       <div className="bntControls min-h-[150px] w-full bg-rose-300"></div>
     </div>
