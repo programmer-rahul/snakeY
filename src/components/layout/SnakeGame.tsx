@@ -1,9 +1,14 @@
 import { useEffect, useRef, useState } from "react";
 
+type GameStatusType = "idle" | "in-progress" | "game-over";
+
 const SnakeGame = () => {
   const CanvasRef = useRef<HTMLCanvasElement>(null);
   const [ctx, setCtx] = useState<CanvasRenderingContext2D | null>(null);
+
   const [CanvasWidth, setCanvasWidth] = useState(300);
+
+  const [gameStatus, setGameStatus] = useState<GameStatusType>("idle");
 
   let cellSize = CanvasWidth / 16;
 
@@ -20,7 +25,6 @@ const SnakeGame = () => {
       }
     }
   };
-  drawCanvasBg();
 
   //   to set canvas width and height based on screen width and height
   useEffect(() => {
@@ -49,12 +53,31 @@ const SnakeGame = () => {
   useEffect(() => {
     const ctx = CanvasRef.current?.getContext("2d");
     ctx && setCtx(ctx);
+
+    drawCanvasBg();
   }, []);
 
   return (
     <div className="max-h-screen min-h-screen w-screen bg-slate-300">
-      {/* <div className="welcomeScreen"></div> */}
-      <div className="gameScreen flex min-h-screen flex-col justify-between gap-2 border bg-gray-800">
+      <div className="welcomeScreen flex h-screen flex-col items-center justify-start bg-slate-300">
+        <h2 className="mb-40 mt-16 text-5xl font-bold text-gray-800">
+          Snake Game
+        </h2>
+        <div className="buttons flex flex-col gap-2">
+          <button
+            className="rounded-md bg-lime-600 px-12 py-2 text-xl font-semibold text-slate-200"
+            onClick={() => {
+              setGameStatus("in-progress");
+            }}
+          >
+            Play
+          </button>
+          <button className="rounded-md bg-blue-600 px-12 py-2 text-xl font-semibold text-slate-200">
+            Multiplayer
+          </button>
+        </div>
+      </div>
+      {/* <div className="gameScreen flex min-h-screen flex-col justify-between gap-2 border bg-gray-800">
         <div className="scores flex min-h-[50px] w-full justify-between border border-slate-500 p-2">
           <div className="flex items-center gap-4">
             <div className="goBack w-8 bg-white">B</div>
@@ -75,7 +98,7 @@ const SnakeGame = () => {
           ></canvas>
         </div>
         <div className="bntControls min-h-[150px] w-full bg-rose-300"></div>
-      </div>
+      </div> */}
     </div>
   );
 };
