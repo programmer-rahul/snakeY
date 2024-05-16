@@ -97,7 +97,7 @@ const GamePlayBoard = () => {
     });
   };
 
-//   game over 
+  //   game over
   const gameOver = () => {
     console.log("game over");
     setGameStatus("game-over");
@@ -183,14 +183,39 @@ const GamePlayBoard = () => {
   const handleUserKeyInput = (event: KeyboardEvent) => {
     switch (event.key) {
       case "ArrowUp":
+        if (gameStatus === "in-progress" && !isSnakeRunning) {
+          setIsSnakeRunning(true);
+          // Prevent changing direction if currently moving downwards
+          if (snakeDirection !== "down") {
+            snakeDirection = "up";
+          }
+        }
+        break;
       case "ArrowDown":
+        if (gameStatus === "in-progress" && !isSnakeRunning) {
+          setIsSnakeRunning(true);
+          // Prevent changing direction if currently moving upwards
+          if (snakeDirection !== "up") {
+            snakeDirection = "down";
+          }
+        }
+        break;
       case "ArrowLeft":
+        if (gameStatus === "in-progress" && !isSnakeRunning) {
+          setIsSnakeRunning(true);
+          // Prevent changing direction if currently moving rightwards
+          if (snakeDirection !== "right") {
+            snakeDirection = "left";
+          }
+        }
+        break;
       case "ArrowRight":
         if (gameStatus === "in-progress" && !isSnakeRunning) {
           setIsSnakeRunning(true);
-          snakeDirection = event.key
-            .replace("Arrow", "")
-            .toLowerCase() as SnakeDirectionType;
+          // Prevent changing direction if currently moving leftwards
+          if (snakeDirection !== "left") {
+            snakeDirection = "right";
+          }
         }
         break;
       default:
