@@ -1,6 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useSnake } from "../context/SnakeContext";
 
+// we declared them here because we dont't want them to reset when state changes
+type SnakeDirectionType = "left" | "right" | "up" | "down";
+let snakeDirection: SnakeDirectionType = "right";
+
 const GamePlayBoard = () => {
   // context
   const { gameStatus } = useSnake();
@@ -12,8 +16,11 @@ const GamePlayBoard = () => {
   const [isSnakeRunning, setIsSnakeRunning] = useState(false);
 
   //   variables
-  let cellSize = CanvasWidth / 16;
+  let cellSize = CanvasWidth / 20;
+  let snake = [{ x: 2 * cellSize, y: 2 * cellSize }];
+  let frame = 1;
 
+  //   functions
   const drawCanvasBg = () => {
     if (!context) return;
     console.log("inside drawCanvasBg");
@@ -26,6 +33,61 @@ const GamePlayBoard = () => {
         context.strokeRect(x * cellSize, y * cellSize, cellSize, cellSize);
       }
     }
+  };
+  const drawSnakeOnCanvas = () => {
+    if (!context) return;
+
+    context.shadowColor = "rgb(226 232 240)";
+    context.shadowBlur = 10;
+
+    context.fillStyle = "rgb(226 232 240)";
+    context.fillRect(snake[0].x, snake[0].y, cellSize, cellSize);
+
+    context.shadowColor = "transparent";
+    context.shadowBlur = 0;
+  };
+
+  const animateCanvas = () => {
+    if (!context) return;
+    console.log("inside animateCanvas");
+
+    if (!isSnakeRunning) return;
+
+    context.clearRect(0, 0, CanvasWidth, CanvasWidth);
+
+    // redraw canvas grid
+    drawCanvasBg();
+    // draw snake on canvas
+    drawSnakeOnCanvas();
+
+    // draw food on canvas
+
+    console.log("direction: " + snakeDirection);
+    if (frame % 20 === 0) {
+      const snakeHead = { ...snake[0] };
+
+      switch (snakeDirection) {
+        case "left":
+          snakeHead.x -= cellSize;
+          break;
+        case "right":
+          snakeHead.x += cellSize;
+          break;
+        case "up":
+          snakeHead.y -= cellSize;
+          break;
+        case "down":
+          snakeHead.y += cellSize;
+          break;
+        default:
+          break;
+      }
+
+      snake[0] = snakeHead;
+    }
+    frame++;
+
+    requestAnimationFrame(animateCanvas);
   };
 
   //   to set canvas width and height based on screen width and height
@@ -67,8 +129,16 @@ const GamePlayBoard = () => {
     }
     if (context) {
       drawCanvasBg();
+      drawSnakeOnCanvas();
     }
   }, [context]);
+
+  //   to start game is isSnakeRunning is true
+  useEffect(() => {
+    if (isSnakeRunning) {
+      animateCanvas();
+    }
+  }, [isSnakeRunning]);
 
   //   to handle user key input
   const handleUserKeyInput = (event: KeyboardEvent) => {
@@ -78,21 +148,25 @@ const GamePlayBoard = () => {
         gameStatus === "in-progress" &&
           !isSnakeRunning &&
           setIsSnakeRunning(true);
+        snakeDirection = "up";
         break;
       case "ArrowDown":
         gameStatus === "in-progress" &&
           !isSnakeRunning &&
           setIsSnakeRunning(true);
+        snakeDirection = "down";
         break;
       case "ArrowLeft":
         gameStatus === "in-progress" &&
           !isSnakeRunning &&
           setIsSnakeRunning(true);
+        snakeDirection = "left";
         break;
       case "ArrowRight":
         gameStatus === "in-progress" &&
           !isSnakeRunning &&
           setIsSnakeRunning(true);
+        snakeDirection = "right";
         break;
     }
   };
