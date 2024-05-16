@@ -28,11 +28,13 @@ const drawSnakeOnCanvas = ({
 }) => {
   if (!context) return;
 
-  context.shadowColor = "rgb(226, 232, 240)";
-  context.shadowBlur = 30;
+  snake.forEach(({ x, y }, index) => {
+    context.shadowColor = index ? "rgb(203 213 225)" : "rgb(226, 232, 240)";
+    context.shadowBlur = index ? 10 : 20;
 
-  context.fillStyle = "rgb(226, 232, 240)";
-  snake.forEach(({ x, y }) => context.fillRect(x, y, cellSize, cellSize));
+    context.fillStyle = index ? "rgb(203 213 225)" : "rgb(226, 232, 240)";
+    context.fillRect(x, y, cellSize, cellSize);
+  });
 
   context.shadowColor = "transparent";
   context.shadowBlur = 0;

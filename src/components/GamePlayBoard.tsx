@@ -11,23 +11,24 @@ let snakeDirection: SnakeDirectionType = "right";
 
 const GamePlayBoard = () => {
   // context
-  const { gameStatus } = useSnake();
+  const { gameStatus, setGameStatus } = useSnake();
 
   //   states
   const CanvasRef = useRef<HTMLCanvasElement>(null);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
   const [CanvasWidth, setCanvasWidth] = useState(300);
   const [isSnakeRunning, setIsSnakeRunning] = useState(false);
+  const snakeRef = useRef(isSnakeRunning);
 
   // variables
   let cellSize = CanvasWidth / 20;
-  let snake = [{ x: 2 * cellSize, y: 2 * cellSize }];
+  let snake = [{ x: 0, y: 0 }];
   let snakeFood = { x: cellSize * 10, y: cellSize * 10 };
   let frame = 0;
 
   //   to animate canvas on every frame
   const animateCanvas = () => {
-    if (!context || !isSnakeRunning) return;
+    if (!context || !isSnakeRunning || !snakeRef.current) return;
 
     context.clearRect(0, 0, CanvasWidth, CanvasWidth);
     drawCanvasBg({ CanvasWidth, cellSize, context });
@@ -41,11 +42,73 @@ const GamePlayBoard = () => {
 
     if (frame % 10 === 0) {
       const newHeadPosition = calculateNewHeadPosition();
-      snake = [newHeadPosition];
+
+      snake.unshift(newHeadPosition);
+      snake.pop();
+
+      calculateSnakeCollition();
+      calculateSnakeFoodCollision();
     }
 
     frame++;
+    console.log("animating canvas", gameStatus);
     requestAnimationFrame(animateCanvas);
+  };
+  //   to calculate snake food collision
+  const calculateSnakeFoodCollision = () => {
+    if (!context) return;
+
+    if (snakeFood.x === snake[0].x && snakeFood.y === snake[0].y) {
+      snakeFood = {
+        x: Math.floor(Math.random() * (CanvasWidth / cellSize)) * cellSize,
+        y: Math.floor(Math.random() * (CanvasWidth / cellSize)) * cellSize,
+      };
+      drawSnakeFoodOnCanvas({
+        x: snakeFood.x,
+        y: snakeFood.y,
+        context,
+        cellSize,
+      });
+      addSnakeTail();
+      console.log(snake);
+    }
+  };
+
+  // to calcultate snake collistions
+  const calculateSnakeCollition = () => {
+    const snakeHead = { ...snake[0] };
+
+    // if snake touches to the boundary of canvas
+    if (
+      snakeHead.x < 0 ||
+      snakeHead.x > CanvasWidth ||
+      snakeHead.y < 0 ||
+      snakeHead.y > CanvasWidth
+    ) {
+      gameOver();
+      return;
+    }
+
+    // if snake touches one of it tails
+    snake.slice(1).forEach((tail) => {
+      if (snakeHead.x === tail.x && snakeHead.y === tail.y) {
+        gameOver();
+      }
+    });
+  };
+
+//   game over 
+  const gameOver = () => {
+    console.log("game over");
+    setGameStatus("game-over");
+    setIsSnakeRunning(false);
+    snakeRef.current = false;
+  };
+
+  //   to add new snake tail
+  const addSnakeTail = () => {
+    const tail = { ...snake[snake.length - 1] };
+    snake.push(tail);
   };
 
   const calculateNewHeadPosition = () => {
@@ -111,6 +174,7 @@ const GamePlayBoard = () => {
   // Start animation when snake is running
   useEffect(() => {
     if (isSnakeRunning) {
+      snakeRef.current = true;
       animateCanvas();
     }
   }, [isSnakeRunning]);
@@ -170,6 +234,10 @@ const GamePlayBoard = () => {
       </div>
       {/* Button controls */}
       <div className="bntControls min-h-[150px] w-full bg-rose-300"></div>
+      {/* Game over message */}
+      {gameStatus === "game-over" && (
+        <div className="bg-red-800">Game Over</div>
+      )}
     </div>
   );
 };
