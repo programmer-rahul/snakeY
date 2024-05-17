@@ -60,7 +60,7 @@ const GamePlayBoard = () => {
     }
 
     frame++;
-    console.log("animating canvas", gameStatus);
+    // console.log("animating canvas", gameStatus);
     requestAnimationFrame(animateCanvas);
   };
   //   to calculate snake food collision
@@ -111,12 +111,10 @@ const GamePlayBoard = () => {
   //   game over
   const gameOver = () => {
     console.log("game over");
-    setGameStatus("game-over");
+    gameStatus = "game-over";
+    setGameStatus(gameStatus);
     setIsSnakeRunning(false);
     snakeRef.current = false;
-
-    console.log(userScore);
-    console.log(userHighScore);
 
     if (userScore >= userHighScore) {
       localStorage.setItem("snakeGameHighScore", String(userScore));
@@ -170,12 +168,6 @@ const GamePlayBoard = () => {
       CanvasRef.current.height = windowWidth - (windowWidth % 10) - 20;
       setCanvasWidth(CanvasRef.current.width);
     }
-    // Add keydown event listener for handling user inputs
-    window.addEventListener("keydown", handleUserKeyInput);
-    // Remove event listener on component unmount
-    return () => {
-      window.removeEventListener("keydown", handleUserKeyInput);
-    };
   }, []);
 
   // Initialize canvas context and draw canvas elements
@@ -196,45 +188,47 @@ const GamePlayBoard = () => {
       snakeRef.current = true;
       animateCanvas();
     }
+    // Add keydown event listener for handling user inputs
+    window.addEventListener("keydown", handleUserKeyInput);
+    // Remove event listener on component unmount
+    return () => {
+      window.removeEventListener("keydown", handleUserKeyInput);
+    };
   }, [isSnakeRunning]);
 
   // Handle user inputs
   const handleUserKeyInput = (event: KeyboardEvent) => {
+    console.log(gameStatus);
+    console.log(isSnakeRunning);
+    console.log("key press");
+
     switch (event.key) {
       case "ArrowUp":
-        if (gameStatus === "in-progress" && !isSnakeRunning) {
-          setIsSnakeRunning(true);
+        if (gameStatus === "in-progress") {
+          if (!isSnakeRunning) setIsSnakeRunning(true);
           // Prevent changing direction if currently moving downwards
-          if (snakeDirection !== "down") {
-            snakeDirection = "up";
-          }
+          if (snakeDirection !== "down") snakeDirection = "up";
         }
         break;
       case "ArrowDown":
-        if (gameStatus === "in-progress" && !isSnakeRunning) {
-          setIsSnakeRunning(true);
+        if (gameStatus === "in-progress") {
+          if (!isSnakeRunning) setIsSnakeRunning(true);
           // Prevent changing direction if currently moving upwards
-          if (snakeDirection !== "up") {
-            snakeDirection = "down";
-          }
+          if (snakeDirection !== "up") snakeDirection = "down";
         }
         break;
       case "ArrowLeft":
-        if (gameStatus === "in-progress" && !isSnakeRunning) {
-          setIsSnakeRunning(true);
+        if (gameStatus === "in-progress") {
+          if (!isSnakeRunning) setIsSnakeRunning(true);
           // Prevent changing direction if currently moving rightwards
-          if (snakeDirection !== "right") {
-            snakeDirection = "left";
-          }
+          if (snakeDirection !== "right") snakeDirection = "left";
         }
         break;
       case "ArrowRight":
-        if (gameStatus === "in-progress" && !isSnakeRunning) {
-          setIsSnakeRunning(true);
+        if (gameStatus === "in-progress") {
+          if (!isSnakeRunning) setIsSnakeRunning(true);
           // Prevent changing direction if currently moving leftwards
-          if (snakeDirection !== "left") {
-            snakeDirection = "right";
-          }
+          if (snakeDirection !== "left") snakeDirection = "right";
         }
         break;
       default:
@@ -242,8 +236,8 @@ const GamePlayBoard = () => {
     }
   };
 
+  // play again btn handler
   const playAgainHandler = () => {
-    console.log("clicked");
     setGameStatus("in-progress");
     setUserScore(0);
     setIsSnakeRunning(true);
@@ -274,8 +268,9 @@ const GamePlayBoard = () => {
           className="border"
           ref={CanvasRef}
         ></canvas>
+
         {/* Press key to start message */}
-        {!isSnakeRunning && (
+        {!isSnakeRunning && gameStatus !== "game-over" && (
           <div
             className="presskeytostart absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-semibold text-slate-200"
             style={{ whiteSpace: "nowrap" }}
@@ -283,14 +278,14 @@ const GamePlayBoard = () => {
             Press control keys to start
           </div>
         )}
+
+        {/* Game over popup */}
+        {gameStatus === "game-over" && (
+          <GameOverPopup playAgainHandler={playAgainHandler} />
+        )}
       </div>
       {/* Button controls */}
       <GameBtnControls />
-
-      {/* Game over popup */}
-      {gameStatus === "game-over" && (
-        <GameOverPopup playAgainHandler={playAgainHandler} />
-      )}
     </div>
   );
 };
