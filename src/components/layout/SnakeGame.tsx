@@ -1,6 +1,6 @@
 import { useSnake } from "../../context/SnakeContext";
-import GameHomeScreen from "../GameHomeScreen";
-import GamePlayBoard from "../GamePlayBoard";
+import GameHomeScreen from "../snake/GameHomeScreen";
+import GamePlayBoard from "../snake/GamePlayBoard";
 
 const SnakeGame = () => {
   const { gameStatus } = useSnake();

@@ -1,4 +1,4 @@
-import { useSnake } from "../context/SnakeContext";
+import { useSnake } from "../../context/SnakeContext";
 
 const GameHomeScreen = () => {
   const { setGameStatus } = useSnake();
