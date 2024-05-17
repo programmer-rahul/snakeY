@@ -9,7 +9,7 @@ import {
 import GameOverPopup from "./GameOverPopup";
 import GameBtnControls from "../reusable/GameBtnControls";
 
-type SnakeDirectionType = "left" | "right" | "up" | "down";
+export type SnakeDirectionType = "left" | "right" | "up" | "down";
 let snakeDirection: SnakeDirectionType = "right";
 
 const GamePlayBoard = () => {
@@ -32,7 +32,11 @@ const GamePlayBoard = () => {
 
   // variables
   let cellSize = CanvasWidth / 20;
-  let snake = [{ x: 0, y: 0 }];
+  let snake = [
+    { x: cellSize * 5, y: cellSize * 4 },
+    { x: cellSize * 4, y: cellSize * 4 },
+    { x: cellSize * 3, y: cellSize * 4 },
+  ];
   let snakeFood = { x: cellSize * 10, y: cellSize * 10 };
   let snakeColor = 0;
   let frame = 0;
@@ -250,6 +254,44 @@ const GamePlayBoard = () => {
     snakeDirection = "right";
   };
 
+  // handler for controlbtn
+  const handleControlsBtnClick = (
+    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
+  ) => {
+    switch (event.currentTarget.ariaLabel) {
+      case "up":
+        if (gameStatus === "in-progress") {
+          if (!isSnakeRunning) setIsSnakeRunning(true);
+          // Prevent changing direction if currently moving downwards
+          if (snakeDirection !== "down") snakeDirection = "up";
+        }
+        break;
+      case "down":
+        if (gameStatus === "in-progress") {
+          if (!isSnakeRunning) setIsSnakeRunning(true);
+          // Prevent changing direction if currently moving upwards
+          if (snakeDirection !== "up") snakeDirection = "down";
+        }
+        break;
+      case "left":
+        if (gameStatus === "in-progress") {
+          if (!isSnakeRunning) setIsSnakeRunning(true);
+          // Prevent changing direction if currently moving rightwards
+          if (snakeDirection !== "right") snakeDirection = "left";
+        }
+        break;
+      case "right":
+        if (gameStatus === "in-progress") {
+          if (!isSnakeRunning) setIsSnakeRunning(true);
+          // Prevent changing direction if currently moving leftwards
+          if (snakeDirection !== "left") snakeDirection = "right";
+        }
+        break;
+      default:
+        break;
+    }
+  };
+
   return (
     <div className="gameScreen flex min-h-screen flex-col justify-between gap-2 border bg-gray-800">
       {/* Game score and controls */}
@@ -291,7 +333,7 @@ const GamePlayBoard = () => {
         )}
       </div>
       {/* Button controls */}
-      <GameBtnControls />
+      <GameBtnControls handleControlsBtnClick={handleControlsBtnClick} />
     </div>
   );
 };
