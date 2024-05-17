@@ -11,7 +11,14 @@ let snakeDirection: SnakeDirectionType = "right";
 
 const GamePlayBoard = () => {
   // context
-  const { gameStatus, setGameStatus } = useSnake();
+  let {
+    gameStatus,
+    setGameStatus,
+    userScore,
+    setUserScore,
+    userHighScore,
+    setUserHighScore,
+  } = useSnake();
 
   //   states
   const CanvasRef = useRef<HTMLCanvasElement>(null);
@@ -58,6 +65,7 @@ const GamePlayBoard = () => {
   const calculateSnakeFoodCollision = () => {
     if (!context) return;
 
+    // chekc if the snakeHead and food positions are same
     if (snakeFood.x === snake[0].x && snakeFood.y === snake[0].y) {
       snakeFood = {
         x: Math.floor(Math.random() * (CanvasWidth / cellSize)) * cellSize,
@@ -70,7 +78,8 @@ const GamePlayBoard = () => {
         cellSize,
       });
       addSnakeTail();
-      console.log(snake);
+      userScore += 5;
+      setUserScore(userScore);
     }
   };
 
@@ -103,6 +112,14 @@ const GamePlayBoard = () => {
     setGameStatus("game-over");
     setIsSnakeRunning(false);
     snakeRef.current = false;
+
+    console.log(userScore);
+    console.log(userHighScore);
+
+    if (userScore >= userHighScore) {
+      localStorage.setItem("snakeGameHighScore", String(userScore));
+      setUserHighScore(userScore);
+    }
   };
 
   //   to add new snake tail
@@ -234,8 +251,8 @@ const GamePlayBoard = () => {
         </div>
         {/* Score and high score */}
         <div className="flex items-center gap-8">
-          <div className="score w-8 bg-white">30</div>
-          <div className="highScore w-8 bg-white">40</div>
+          <div className="score w-8 bg-white">{userScore}</div>
+          <div className="highScore w-8 bg-white">{userHighScore}</div>
         </div>
       </div>
       {/* Game board */}
