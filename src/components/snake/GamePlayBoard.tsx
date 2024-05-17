@@ -31,13 +31,13 @@ const GamePlayBoard = () => {
   const snakeRef = useRef(isSnakeRunning);
 
   // variables
-  let cellSize = CanvasWidth / 20;
+  let cellSize = CanvasWidth / 16;
   let snake = [
     { x: cellSize * 5, y: cellSize * 4 },
     { x: cellSize * 4, y: cellSize * 4 },
     { x: cellSize * 3, y: cellSize * 4 },
   ];
-  let snakeFood = { x: cellSize * 10, y: cellSize * 10 };
+  let snakeFood = { x: cellSize * 7, y: cellSize * 7 };
   let snakeColor = 0;
   let frame = 0;
 
@@ -56,7 +56,7 @@ const GamePlayBoard = () => {
       snakeColor,
     });
 
-    if (frame % 10 === 0) {
+    if (frame % 8 === 0) {
       const newHeadPosition = calculateNewHeadPosition();
 
       snake.unshift(newHeadPosition);
@@ -106,9 +106,9 @@ const GamePlayBoard = () => {
     // if snake touches to the boundary of canvas
     if (
       snakeHead.x < 0 ||
-      snakeHead.x > CanvasWidth ||
+      snakeHead.x >= CanvasWidth ||
       snakeHead.y < 0 ||
-      snakeHead.y > CanvasWidth
+      snakeHead.y >= CanvasWidth
     ) {
       gameOver();
       return;
@@ -293,7 +293,7 @@ const GamePlayBoard = () => {
   };
 
   return (
-    <div className="gameScreen flex min-h-screen flex-col justify-between gap-2 border bg-gray-800">
+    <div className="gameScreen flex max-h-svh min-h-svh w-full flex-col justify-between gap-2 overflow-hidden border bg-gray-800">
       {/* Game score and controls */}
       <div className="scores flex min-h-[50px] w-full justify-between border border-slate-500 p-2">
         {/* Back and sound controls */}
