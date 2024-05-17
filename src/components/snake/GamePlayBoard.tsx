@@ -4,6 +4,7 @@ import {
   drawCanvasBg,
   drawSnakeFoodOnCanvas,
   drawSnakeOnCanvas,
+  SNAKE_FOOD_COLORS,
 } from "../../utils/canvas";
 import GameOverPopup from "./GameOverPopup";
 import GameBtnControls from "../reusable/GameBtnControls";
@@ -33,6 +34,7 @@ const GamePlayBoard = () => {
   let cellSize = CanvasWidth / 20;
   let snake = [{ x: 0, y: 0 }];
   let snakeFood = { x: cellSize * 10, y: cellSize * 10 };
+  let snakeColor = 0;
   let frame = 0;
 
   //   to animate canvas on every frame
@@ -47,6 +49,7 @@ const GamePlayBoard = () => {
       y: snakeFood.y,
       context,
       cellSize,
+      snakeColor,
     });
 
     if (frame % 10 === 0) {
@@ -73,11 +76,18 @@ const GamePlayBoard = () => {
         x: Math.floor(Math.random() * (CanvasWidth / cellSize)) * cellSize,
         y: Math.floor(Math.random() * (CanvasWidth / cellSize)) * cellSize,
       };
+      if (snakeColor >= SNAKE_FOOD_COLORS.length - 1) {
+        snakeColor = 0;
+      } else {
+        snakeColor += 1;
+      }
+
       drawSnakeFoodOnCanvas({
         x: snakeFood.x,
         y: snakeFood.y,
         context,
         cellSize,
+        snakeColor,
       });
       addSnakeTail();
       userScore += 5;
@@ -198,10 +208,6 @@ const GamePlayBoard = () => {
 
   // Handle user inputs
   const handleUserKeyInput = (event: KeyboardEvent) => {
-    console.log(gameStatus);
-    console.log(isSnakeRunning);
-    console.log("key press");
-
     switch (event.key) {
       case "ArrowUp":
         if (gameStatus === "in-progress") {
@@ -272,7 +278,7 @@ const GamePlayBoard = () => {
         {/* Press key to start message */}
         {!isSnakeRunning && gameStatus !== "game-over" && (
           <div
-            className="presskeytostart absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-semibold text-slate-200"
+            className="presskeytostart absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-semibold text-slate-200 "
             style={{ whiteSpace: "nowrap" }}
           >
             Press control keys to start
