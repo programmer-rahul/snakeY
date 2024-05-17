@@ -11,7 +11,7 @@ const SnakeGame = () => {
       {gameStatus === "idle" && <GameHomeScreen />}
 
       {/* game play board  */}
-      {gameStatus === "in-progress" && <GamePlayBoard />}
+      {gameStatus !== "idle" && <GamePlayBoard />}
     </div>
   );
 };
