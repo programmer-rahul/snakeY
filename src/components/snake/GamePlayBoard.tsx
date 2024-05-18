@@ -25,6 +25,7 @@ const GamePlayBoard = () => {
 
   //   states
   const CanvasRef = useRef<HTMLCanvasElement>(null);
+  const GameScreenRef = useRef<HTMLDivElement>(null);
   const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
   const [CanvasWidth, setCanvasWidth] = useState(300);
   const [isSnakeRunning, setIsSnakeRunning] = useState(false);
@@ -165,23 +166,33 @@ const GamePlayBoard = () => {
     return snakeHead;
   };
 
-  // Set up canvas dimensions and key event listener
+  // Set up canvas dimensions
   useEffect(() => {
-    // Calculate initial canvas dimensions
-    const windowHeight = window.innerHeight - 200;
-    const windowWidth = window.innerWidth;
-    // Set canvas dimensions based on window size
-    if (window.innerWidth > windowHeight) {
-      if (!CanvasRef.current) return;
-      CanvasRef.current.width = windowHeight - (windowHeight % 10) - 20;
-      CanvasRef.current.height = windowHeight - (windowHeight % 10) - 20;
+    const calculateCanvasDimensions = () => {
+      if (!GameScreenRef.current || !CanvasRef.current) return;
+
+      const windowHeight = window.innerHeight;
+      const windowWidth = window.innerWidth;
+
+      const scoresPanel = GameScreenRef.current.children[0];
+      const btnControls = GameScreenRef.current.children[2];
+
+      let availableHeight =
+        windowHeight - (scoresPanel.clientHeight + btnControls.clientHeight);
+
+      if (windowWidth > availableHeight) {
+        CanvasRef.current.width = availableHeight - (availableHeight % 10) - 20;
+        CanvasRef.current.height =
+          availableHeight - (availableHeight % 10) - 20;
+      } else {
+        CanvasRef.current.width = windowWidth - (windowWidth % 10) - 20;
+        CanvasRef.current.height = windowWidth - (windowWidth % 10) - 20;
+      }
       setCanvasWidth(CanvasRef.current.width);
-    } else {
-      if (!CanvasRef.current) return;
-      CanvasRef.current.width = windowWidth - (windowWidth % 10) - 20;
-      CanvasRef.current.height = windowWidth - (windowWidth % 10) - 20;
-      setCanvasWidth(CanvasRef.current.width);
-    }
+    };
+    calculateCanvasDimensions();
+
+    window.addEventListener("resize", calculateCanvasDimensions);
   }, []);
 
   // Initialize canvas context and draw canvas elements
@@ -293,7 +304,10 @@ const GamePlayBoard = () => {
   };
 
   return (
-    <div className="gameScreen flex max-h-svh min-h-svh w-full flex-col justify-between gap-2 overflow-hidden border bg-gray-800">
+    <div
+      className="gameScreen flex max-h-svh min-h-svh w-full flex-col justify-between gap-2 overflow-hidden border bg-gray-800"
+      ref={GameScreenRef}
+    >
       {/* Game score and controls */}
       <div className="scores flex min-h-[50px] w-full justify-between border border-slate-500 p-2">
         {/* Back and sound controls */}
@@ -308,7 +322,7 @@ const GamePlayBoard = () => {
         </div>
       </div>
       {/* Game board */}
-      <div className="gameBoard relative self-center border border-purple-600">
+      <div className="gameBoard relative self-center border border-purple-600 md:mb-6">
         {/* Canvas */}
         <canvas
           width={CanvasWidth}
