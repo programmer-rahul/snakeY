@@ -11,6 +11,9 @@ interface ContextInterface {
 
   userHighScore: number;
   setUserHighScore: React.Dispatch<React.SetStateAction<number>>;
+
+  gameSound: boolean;
+  setGameSound: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 const SnakeContext = createContext<ContextInterface>({
@@ -22,6 +25,9 @@ const SnakeContext = createContext<ContextInterface>({
 
   userHighScore: 0,
   setUserHighScore: () => null,
+
+  gameSound: true,
+  setGameSound: () => null,
 });
 
 const useSnake = () => useContext(SnakeContext);
@@ -36,6 +42,8 @@ const SnakeProvider = ({ children }: { children: ReactNode }) => {
     return highScore ? parseInt(highScore) : 0;
   });
 
+  const [gameSound, setGameSound] = useState(true);
+
   return (
     <SnakeContext.Provider
       value={{
@@ -45,6 +53,8 @@ const SnakeProvider = ({ children }: { children: ReactNode }) => {
         setUserScore,
         userHighScore,
         setUserHighScore,
+        gameSound,
+        setGameSound,
       }}
     >
       {children}

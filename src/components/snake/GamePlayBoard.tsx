@@ -8,6 +8,7 @@ import {
 } from "../../utils/canvas";
 import GameOverPopup from "./GameOverPopup";
 import GameBtnControls from "../reusable/GameBtnControls";
+import GameBoardHeader from "./GameBoardHeader";
 
 export type SnakeDirectionType = "left" | "right" | "up" | "down";
 let snakeDirection: SnakeDirectionType = "right";
@@ -309,18 +310,7 @@ const GamePlayBoard = () => {
       ref={GameScreenRef}
     >
       {/* Game score and controls */}
-      <div className="scores flex min-h-[50px] w-full justify-between border border-slate-500 p-2">
-        {/* Back and sound controls */}
-        <div className="flex items-center gap-4">
-          <div className="goBack w-8 bg-white">B</div>
-          <div className="soundControl w-8 bg-white">S</div>
-        </div>
-        {/* Score and high score */}
-        <div className="flex items-center gap-8">
-          <div className="score w-8 bg-white">{userScore}</div>
-          <div className="highScore w-8 bg-white">{userHighScore}</div>
-        </div>
-      </div>
+      <GameBoardHeader/>
       {/* Game board */}
       <div className="gameBoard relative self-center border border-purple-600 md:mb-6">
         {/* Canvas */}
