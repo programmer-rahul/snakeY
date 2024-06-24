@@ -4,7 +4,7 @@ const GameBoardHeader = () => {
   const { gameSound, setGameSound, userHighScore, userScore } = useSnake();
 
   return (
-    <div className="scores flex min-h-[50px] w-full items-center justify-between border border-slate-500 p-2">
+    <div className="scores flex min-h-[50px] w-full items-center justify-between p-2">
       {/* Back and sound controls */}
 
       <div className="flex items-center gap-6">
@@ -56,8 +56,14 @@ const GameBoardHeader = () => {
 
       {/* Score and high score */}
       <div className="flex items-center gap-8">
-        <div className="score w-8 bg-white">{userScore}</div>
-        <div className="highScore w-8 bg-white">{userHighScore}</div>
+        <div className="score flex flex-col items-center">
+          <p className="text-gray-300">Score</p>
+          <p className="font-bold text-slate-200">{userScore}</p>
+        </div>
+        <div className="score flex flex-col items-center">
+          <p className="text-gray-300">High Score</p>
+          <p className="font-bold text-slate-200">{userHighScore}</p>
+        </div>
       </div>
     </div>
   );

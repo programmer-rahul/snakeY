@@ -73,7 +73,7 @@ const GamePlayBoard = () => {
     // console.log("animating canvas", gameStatus);
     requestAnimationFrame(animateCanvas);
   };
-  
+
   //   to calculate snake food collision
   const calculateSnakeFoodCollision = () => {
     if (!context) return;
@@ -308,18 +308,18 @@ const GamePlayBoard = () => {
 
   return (
     <div
-      className="gameScreen flex max-h-svh min-h-svh w-full flex-col justify-between gap-2 overflow-hidden border bg-gray-800"
+      className="gameScreen flex max-h-svh min-h-svh w-full flex-col justify-between gap-2 overflow-hidden bg-gradient-to-r from-[#614385] to-[#516395]"
       ref={GameScreenRef}
     >
       {/* Game score and controls */}
       <GameBoardHeader />
+
       {/* Game board */}
-      <div className="gameBoard relative self-center border border-purple-600 md:mb-6">
+      <div className="gameBoard relative self-center border-2 md:mb-6">
         {/* Canvas */}
         <canvas
           width={CanvasWidth}
           height={CanvasWidth}
-          className="border"
           ref={CanvasRef}
         ></canvas>
 
@@ -338,6 +338,7 @@ const GamePlayBoard = () => {
           <GameOverPopup playAgainHandler={playAgainHandler} />
         )}
       </div>
+
       {/* Button controls */}
       <GameBtnControls handleControlsBtnClick={handleControlsBtnClick} />
     </div>
