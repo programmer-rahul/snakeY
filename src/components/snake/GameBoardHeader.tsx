@@ -8,7 +8,8 @@ const GameBoardHeader = () => {
       {/* Back and sound controls */}
 
       <div className="flex items-center gap-6">
-        <div
+        <a
+          href="/"
           className={`goBack w-10 cursor-pointer text-slate-200`}
           onClick={() => {}}
         >
@@ -26,7 +27,7 @@ const GameBoardHeader = () => {
               strokeLinejoin="round"
             />
           </svg>
-        </div>
+        </a>
         <div
           className={`soundControl w-8 cursor-pointer ${gameSound ? "text-slate-200" : "text-slate-600"}`}
           onClick={() => {
