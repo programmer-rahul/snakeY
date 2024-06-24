@@ -1,25 +1,29 @@
 import { useSnake } from "../../context/SnakeContext";
+import Button from "../ui/Button";
 
 const GameHomeScreen = () => {
   const { setGameStatus } = useSnake();
 
   return (
-    <div className="welcomeScreen flex h-screen flex-col items-center justify-start bg-slate-300">
-      <h2 className="mb-40 mt-16 text-5xl font-bold text-gray-800">
-        Snake Game
-      </h2>
-      <div className="buttons flex flex-col gap-2">
-        <button
-          className="rounded-md bg-lime-600 px-12 py-2 text-xl font-semibold text-slate-200"
-          onClick={() => {
-            setGameStatus("in-progress");
-          }}
-        >
-          Play
-        </button>
-        <button className="rounded-md bg-blue-600 px-12 py-2 text-xl font-semibold text-slate-200">
-          Multiplayer
-        </button>
+    <div className="welcomeScreen pattern flex h-screen flex-col items-center justify-center bg-gradient-to-r from-[#614385] to-[#516395]">
+      <div className="flex w-auto flex-col items-center gap-8 rounded-xl bg-gray-300 px-8 py-40 shadow-2xl">
+        <div className="space-y-4">
+          <h2 className="text-6xl font-bold text-gray-800">Snake Game</h2>
+          <p className="w-96 text-center leading-5 text-zinc-800">
+            Enjoy the classic Snake game. Navigate your snake to eat food and
+            grow longer. Avoid hitting the walls or yourself!
+          </p>
+        </div>
+
+        <div className="buttons flex w-full flex-col gap-2">
+          <Button
+            text="Play"
+            onClick={() => {
+              setGameStatus("in-progress");
+            }}
+            icon="playIcon"
+          />
+        </div>
       </div>
     </div>
   );

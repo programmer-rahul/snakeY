@@ -34,6 +34,7 @@ const GamePlayBoard = () => {
 
   // variables
   let cellSize = CanvasWidth / 16;
+
   let snake = [
     { x: cellSize * 5, y: cellSize * 4 },
     { x: cellSize * 4, y: cellSize * 4 },
@@ -72,6 +73,7 @@ const GamePlayBoard = () => {
     // console.log("animating canvas", gameStatus);
     requestAnimationFrame(animateCanvas);
   };
+  
   //   to calculate snake food collision
   const calculateSnakeFoodCollision = () => {
     if (!context) return;
@@ -310,7 +312,7 @@ const GamePlayBoard = () => {
       ref={GameScreenRef}
     >
       {/* Game score and controls */}
-      <GameBoardHeader/>
+      <GameBoardHeader />
       {/* Game board */}
       <div className="gameBoard relative self-center border border-purple-600 md:mb-6">
         {/* Canvas */}

@@ -6,7 +6,7 @@ const SnakeGame = () => {
   const { gameStatus } = useSnake();
 
   return (
-    <div className="max-h-dvh min-h-dvh w-full bg-slate-300">
+    <div className="max-h-dvh min-h-dvh w-full">
       {/* game home screen  */}
       {gameStatus === "idle" && <GameHomeScreen />}
 
