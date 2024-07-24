@@ -59,7 +59,7 @@ const GamePlayBoard = () => {
       snakeColor,
     });
 
-    if (frame % 8 === 0) {
+    if (frame % 16 === 0) {
       const newHeadPosition = calculateNewHeadPosition();
 
       snake.unshift(newHeadPosition);
