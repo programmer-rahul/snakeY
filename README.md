@@ -20,7 +20,6 @@
 - Sound Effects 🎵
 - Responsive Design 📱
 - Touch Controls for Smaller Devices 📲
-- Different Game Modes 🎯
 
 ## Getting Started ⚙️
 
