@@ -1,8 +1,16 @@
 import { useSnake } from "../../context/SnakeContext";
 import Button from "../ui/Button";
+import gsSound from "../../assets/gamestart.mp3";
 
 const GameHomeScreen = () => {
   const { setGameStatus } = useSnake();
+
+  const gameStart = new Howl({ src: [gsSound.toString()] });
+
+  const startHandle = () => {
+    setGameStatus("in-progress");
+    gameStart.play();
+  };
 
   return (
     <div className="welcomeScreen pattern flex h-screen flex-col items-center justify-center bg-gradient-to-r from-[#614385] to-[#516395]">
@@ -16,13 +24,7 @@ const GameHomeScreen = () => {
         </div>
 
         <div className="buttons flex w-full flex-col gap-2">
-          <Button
-            text="Play"
-            onClick={() => {
-              setGameStatus("in-progress");
-            }}
-            icon="playIcon"
-          />
+          <Button text="Play" onClick={startHandle} icon="playIcon" />
         </div>
       </div>
     </div>

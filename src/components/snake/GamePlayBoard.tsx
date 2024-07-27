@@ -9,6 +9,10 @@ import {
 import GameOverPopup from "./GameOverPopup";
 import GameBtnControls from "../reusable/GameBtnControls";
 import GameBoardHeader from "./GameBoardHeader";
+import { Howl } from "howler";
+import goSound from "../../assets/gameover.wav";
+import gsSound from "../../assets/gamestart.mp3";
+import foodSound from "../../assets/food.mp3";
 
 export type SnakeDirectionType = "left" | "right" | "up" | "down";
 let snakeDirection: SnakeDirectionType = "right";
@@ -44,6 +48,12 @@ const GamePlayBoard = () => {
   let snakeColor = 0;
   let frame = 0;
 
+  // audio controller
+  const adController = {
+    food: new Howl({ src: [foodSound.toString()] }),
+    gameOver: new Howl({ src: [goSound.toString()] }),
+    gameStart: new Howl({ src: [gsSound.toString()] }),
+  };
   //   to animate canvas on every frame
   const animateCanvas = () => {
     if (!context || !isSnakeRunning || !snakeRef.current) return;
@@ -100,6 +110,7 @@ const GamePlayBoard = () => {
       addSnakeTail();
       userScore += 5;
       setUserScore(userScore);
+      adController.food.play();
     }
   };
 
@@ -115,6 +126,7 @@ const GamePlayBoard = () => {
       snakeHead.y >= CanvasWidth
     ) {
       gameOver();
+
       return;
     }
 
@@ -138,6 +150,7 @@ const GamePlayBoard = () => {
       localStorage.setItem("snakeGameHighScore", String(userScore));
       setUserHighScore(userScore);
     }
+    adController.gameOver.play();
   };
 
   //   to add new snake tail
@@ -266,6 +279,7 @@ const GamePlayBoard = () => {
     setUserScore(0);
     setIsSnakeRunning(true);
     snakeDirection = "right";
+    adController.gameStart.play();
   };
 
   // handler for controlbtn
