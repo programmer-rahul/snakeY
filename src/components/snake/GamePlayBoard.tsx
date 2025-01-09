@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { useSnake } from "../../context/SnakeContext";
-import {
-  drawCanvasBg,
-  drawSnakeFoodOnCanvas,
-  drawSnakeOnCanvas,
-  SNAKE_FOOD_COLORS,
-} from "../../utils/canvas";
+import { SNAKE_FOOD_COLORS } from "../../utils/canvas";
 import GameOverPopup from "./GameOverPopup";
 import GameBtnControls from "../reusable/GameBtnControls";
 import GameBoardHeader from "./GameBoardHeader";
@@ -13,9 +8,13 @@ import { Howl } from "howler";
 import goSound from "../../assets/gameover.wav";
 import gsSound from "../../assets/gamestart.mp3";
 import foodSound from "../../assets/food.mp3";
+import { Layer, Rect, Stage } from "react-konva";
+import Konva from "konva";
 
 export type SnakeDirectionType = "left" | "right" | "up" | "down";
 let snakeDirection: SnakeDirectionType = "right";
+
+const TotalCells = 20;
 
 const GamePlayBoard = () => {
   // context
@@ -29,120 +28,106 @@ const GamePlayBoard = () => {
   } = useSnake();
 
   //   states
-  const CanvasRef = useRef<HTMLCanvasElement>(null);
-  const GameScreenRef = useRef<HTMLDivElement>(null);
-  const [context, setContext] = useState<CanvasRenderingContext2D | null>(null);
-  const [CanvasWidth, setCanvasWidth] = useState(300);
+  const [gameBoardWidth, setGameBoardWidth] = useState(400);
+  const [cellSize, setCellSize] = useState(gameBoardWidth / TotalCells);
   const [isSnakeRunning, setIsSnakeRunning] = useState(false);
+
+  let [snakePos, setSnakePos] = useState<{ x: number; y: number }[]>([]);
+  let [snakeFood, setSnakeFood] = useState({ x: 0, y: 0 });
+  let [snakeFoodColorIndex, setSnakeFoodColorIndex] = useState(0);
+
+  // ref
+  const canvasRef = useRef<Konva.Stage>(null);
+  const GameScreenRef = useRef<HTMLDivElement>(null);
   const snakeRef = useRef(isSnakeRunning);
 
   // variables
-  let cellSize = CanvasWidth / 16;
-
-  let snake = [
-    { x: cellSize * 5, y: cellSize * 4 },
-    { x: cellSize * 4, y: cellSize * 4 },
-    { x: cellSize * 3, y: cellSize * 4 },
-  ];
-  let snakeFood = { x: cellSize * 7, y: cellSize * 7 };
-  let snakeColor = 0;
   let frame = 0;
 
   // audio controller
-  const adController = {
+  const audioController = {
     food: new Howl({ src: [foodSound.toString()] }),
     gameOver: new Howl({ src: [goSound.toString()] }),
     gameStart: new Howl({ src: [gsSound.toString()] }),
   };
-  //   to animate canvas on every frame
+
+  // to animate canvas on every frame
   const animateCanvas = () => {
-    if (!context || !isSnakeRunning || !snakeRef.current) return;
-
-    context.clearRect(0, 0, CanvasWidth, CanvasWidth);
-    drawCanvasBg({ CanvasWidth, cellSize, context });
-    drawSnakeOnCanvas({ snake, cellSize, context });
-    drawSnakeFoodOnCanvas({
-      x: snakeFood.x,
-      y: snakeFood.y,
-      context,
-      cellSize,
-      snakeColor,
-    });
-
+    if (!isSnakeRunning || !snakeRef.current) return;
     if (frame % 8 === 0) {
-      const newHeadPosition = calculateNewHeadPosition();
+      // calculate snake new position and update
+      updateSnakePosition();
 
-      snake.unshift(newHeadPosition);
-      snake.pop();
-
-      calculateSnakeCollition();
+      // collision detections
       calculateSnakeFoodCollision();
+      calculateSnakeCollision();
     }
-
     frame++;
-    // console.log("animating canvas", gameStatus);
     requestAnimationFrame(animateCanvas);
   };
 
-  //   to calculate snake food collision
+  // update snakePos position on canvas
+  const updateSnakePosition = () => {
+    const newHeadPosition = calculateNewHeadPosition();
+    snakePos.unshift(newHeadPosition);
+    snakePos.pop();
+    setSnakePos([...snakePos]);
+  };
+
+  // to calculate snakePos food collision
   const calculateSnakeFoodCollision = () => {
-    if (!context) return;
-
-    // chekc if the snakeHead and food positions are same
-    if (snakeFood.x === snake[0].x && snakeFood.y === snake[0].y) {
+    // check if the snakeHead and food position are same
+    if (snakeFood.x === snakePos[0].x && snakeFood.y === snakePos[0].y) {
       snakeFood = {
-        x: Math.floor(Math.random() * (CanvasWidth / cellSize)) * cellSize,
-        y: Math.floor(Math.random() * (CanvasWidth / cellSize)) * cellSize,
+        x: cellSize * Math.floor(Math.random() * TotalCells),
+        y: cellSize * Math.floor(Math.random() * TotalCells),
       };
-      if (snakeColor >= SNAKE_FOOD_COLORS.length - 1) {
-        snakeColor = 0;
-      } else {
-        snakeColor += 1;
-      }
+      setSnakeFood(snakeFood);
 
-      drawSnakeFoodOnCanvas({
-        x: snakeFood.x,
-        y: snakeFood.y,
-        context,
-        cellSize,
-        snakeColor,
-      });
+      if (snakeFoodColorIndex >= SNAKE_FOOD_COLORS.length - 1)
+        snakeFoodColorIndex = 0;
+      else snakeFoodColorIndex += 1;
+
+      // update new color for snake food
+      setSnakeFoodColorIndex(snakeFoodColorIndex);
+
+      // add new box at snake tail
       addSnakeTail();
-      userScore += 5;
-      setUserScore(userScore);
-      adController.food.play();
+
+      // update user score
+      setUserScore((prev) => prev + 5);
+
+      // play food eat sound
+      audioController.food.play();
     }
   };
 
-  // to calcultate snake collistions
-  const calculateSnakeCollition = () => {
-    const snakeHead = { ...snake[0] };
+  // to calcultate snakePos collistions
+  const calculateSnakeCollision = () => {
+    const snakeHead = { ...snakePos[0] };
 
-    // if snake touches to the boundary of canvas
+    // if snakePos touches to the boundary of canvas
     if (
       snakeHead.x < 0 ||
-      snakeHead.x >= CanvasWidth ||
+      snakeHead.x >= gameBoardWidth ||
       snakeHead.y < 0 ||
-      snakeHead.y >= CanvasWidth
+      snakeHead.y >= gameBoardWidth
     ) {
       gameOver();
-
       return;
     }
 
-    // if snake touches one of it tails
-    snake.slice(1).forEach((tail) => {
+    // if snakePos touches one of it tails
+    snakePos.slice(1).forEach((tail) => {
       if (snakeHead.x === tail.x && snakeHead.y === tail.y) {
         gameOver();
       }
     });
   };
 
-  //   game over
+  // game over
   const gameOver = () => {
-    console.log("game over");
-    gameStatus = "game-over";
-    setGameStatus(gameStatus);
+    setGameStatus("game-over");
     setIsSnakeRunning(false);
     snakeRef.current = false;
 
@@ -150,17 +135,18 @@ const GamePlayBoard = () => {
       localStorage.setItem("snakeGameHighScore", String(userScore));
       setUserHighScore(userScore);
     }
-    adController.gameOver.play();
+    audioController.gameOver.play();
   };
 
-  //   to add new snake tail
+  // to add new snakePos tail
   const addSnakeTail = () => {
-    const tail = { ...snake[snake.length - 1] };
-    snake.push(tail);
+    const tail = { ...snakePos[snakePos.length - 1] };
+    snakePos.push(tail);
+    setSnakePos([...snakePos]);
   };
 
   const calculateNewHeadPosition = () => {
-    const snakeHead = { ...snake[0] };
+    const snakeHead = { ...snakePos[0] };
 
     switch (snakeDirection) {
       case "left":
@@ -182,10 +168,27 @@ const GamePlayBoard = () => {
     return snakeHead;
   };
 
+  const resetSnakePosition = () => {
+    setSnakePos([
+      { x: cellSize * 6, y: cellSize * 3 },
+      { x: cellSize * 5, y: cellSize * 3 },
+      { x: cellSize * 4, y: cellSize * 3 },
+    ]);
+    setSnakeFood({
+      x: cellSize * Math.floor(Math.random() * TotalCells),
+      y: cellSize * Math.floor(Math.random() * TotalCells),
+    });
+  };
+
+  // update initial snakePos and food position
+  useEffect(() => {
+    resetSnakePosition();
+  }, [cellSize]);
+
   // Set up canvas dimensions
   useEffect(() => {
     const calculateCanvasDimensions = () => {
-      if (!GameScreenRef.current || !CanvasRef.current) return;
+      if (!GameScreenRef.current || !canvasRef.current) return;
 
       const windowHeight = window.innerHeight;
       const windowWidth = window.innerWidth;
@@ -197,37 +200,28 @@ const GamePlayBoard = () => {
         windowHeight - (scoresPanel.clientHeight + btnControls.clientHeight);
 
       if (windowWidth > availableHeight) {
-        CanvasRef.current.width = availableHeight - (availableHeight % 10) - 20;
-        CanvasRef.current.height =
-          availableHeight - (availableHeight % 10) - 20;
+        canvasRef.current.width(availableHeight - (availableHeight % 10) - 20);
       } else {
-        CanvasRef.current.width = windowWidth - (windowWidth % 10) - 20;
-        CanvasRef.current.height = windowWidth - (windowWidth % 10) - 20;
+        canvasRef.current.width(windowWidth - (windowWidth % 10) - 20);
       }
-      setCanvasWidth(CanvasRef.current.width);
+
+      const gameBoardWidth = canvasRef.current.width();
+
+      canvasRef.current.width(gameBoardWidth);
+      setCellSize(gameBoardWidth / TotalCells);
+      setGameBoardWidth(gameBoardWidth);
     };
     calculateCanvasDimensions();
 
     window.addEventListener("resize", calculateCanvasDimensions);
   }, []);
 
-  // Initialize canvas context and draw canvas elements
-  useEffect(() => {
-    if (!context) {
-      const ctx = CanvasRef.current?.getContext("2d");
-      ctx && setContext(ctx);
-    }
-    if (context) {
-      drawCanvasBg({ CanvasWidth, context, cellSize });
-      drawSnakeOnCanvas({ snake, context, cellSize });
-    }
-  }, [context]);
-
-  // Start animation when snake is running
+  // Start animation when snakePos is running
   useEffect(() => {
     if (isSnakeRunning) {
       snakeRef.current = true;
       animateCanvas();
+      // moveSnake()
     }
     // Add keydown event listener for handling user inputs
     window.addEventListener("keydown", handleUserKeyInput);
@@ -241,6 +235,7 @@ const GamePlayBoard = () => {
   const handleUserKeyInput = (event: KeyboardEvent) => {
     switch (event.key) {
       case "ArrowUp":
+        console.log("statu", gameStatus);
         if (gameStatus === "in-progress") {
           if (!isSnakeRunning) setIsSnakeRunning(true);
           // Prevent changing direction if currently moving downwards
@@ -275,11 +270,12 @@ const GamePlayBoard = () => {
 
   // play again btn handler
   const playAgainHandler = () => {
+    resetSnakePosition();
     setGameStatus("in-progress");
     setUserScore(0);
     setIsSnakeRunning(true);
     snakeDirection = "right";
-    adController.gameStart.play();
+    audioController.gameStart.play();
   };
 
   // handler for controlbtn
@@ -322,7 +318,7 @@ const GamePlayBoard = () => {
 
   return (
     <div
-      className="gameScreen flex max-h-svh min-h-svh w-full flex-col justify-between gap-2 overflow-hidden bg-gradient-to-r from-[#614385] to-[#516395]"
+      className="gameScreen flex max-h-svh min-h-svh w-full flex-col justify-between gap-2 overflow-hidden bg-gradient-to-r from-[#614385] to-[#520395]"
       ref={GameScreenRef}
     >
       {/* Game score and controls */}
@@ -331,11 +327,42 @@ const GamePlayBoard = () => {
       {/* Game board */}
       <div className="gameBoard relative self-center border-2 md:mb-6">
         {/* Canvas */}
-        <canvas
-          width={CanvasWidth}
-          height={CanvasWidth}
-          ref={CanvasRef}
-        ></canvas>
+        <Stage width={gameBoardWidth} height={gameBoardWidth} ref={canvasRef}>
+          {/* bg layer  */}
+          <Layer>
+            <Rect
+              width={gameBoardWidth}
+              height={gameBoardWidth}
+              fill={"rgb(34,29,42)"}
+            />
+          </Layer>
+
+          {/* player layer  */}
+          <Layer>
+            {/* food  */}
+            <Rect
+              width={cellSize}
+              height={cellSize}
+              fill={SNAKE_FOOD_COLORS[snakeFoodColorIndex]}
+              x={snakeFood.x}
+              y={snakeFood.y}
+            />
+
+            {/* snakePos  */}
+            {snakePos?.map((pos, index) => {
+              return (
+                <Rect
+                  key={index}
+                  width={cellSize}
+                  height={cellSize}
+                  fill={"rgb(226, 232, 240)"}
+                  x={pos.x}
+                  y={pos.y}
+                />
+              );
+            })}
+          </Layer>
+        </Stage>
 
         {/* Press key to start message */}
         {!isSnakeRunning && gameStatus !== "game-over" && (

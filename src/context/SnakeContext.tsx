@@ -33,7 +33,7 @@ const SnakeContext = createContext<ContextInterface>({
 const useSnake = () => useContext(SnakeContext);
 
 const SnakeProvider = ({ children }: { children: ReactNode }) => {
-  const [gameStatus, setGameStatus] = useState<GameStatusType>("idle");
+  const [gameStatus, setGameStatus] = useState<GameStatusType>("in-progress");
 
   const [userScore, setUserScore] = useState(0);
   const [userHighScore, setUserHighScore] = useState(() => {
