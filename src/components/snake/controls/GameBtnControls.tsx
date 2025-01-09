@@ -1,12 +1,28 @@
-import { SnakeDirectionType } from "../snake/GamePlayBoard";
+import { SnakeDirectionType } from "../../../hooks/useSnake";
 
-const GameBtnControls = ({
-  handleControlsBtnClick,
-}: {
-  handleControlsBtnClick: (
+const GameBtnControls = ({}: {}) => {
+  // handler for controlbtn
+  const handleControlsBtnClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  ) => void;
-}) => {
+  ) => {
+    switch (event.currentTarget.ariaLabel) {
+      // case "up":
+      //   if (snakeDirection !== "down") snakeDirection = "up";
+      //   break;
+      // case "down":
+      //   if (snakeDirection !== "up") snakeDirection = "down";
+      //   break;
+      // case "left":
+      //   if (snakeDirection !== "right") snakeDirection = "left";
+      //   break;
+      // case "right":
+      //   if (snakeDirection !== "left") snakeDirection = "right";
+      //   break;
+      default:
+        break;
+    }
+  };
+
   return (
     <div className="bntControls flex h-64 w-full flex-col items-center justify-center py-4 md:hidden">
       <div className="grid h-full grid-cols-3 grid-rows-3 place-content-center place-items-center rounded-md border-2 border-purple-700 p-2 text-slate-300">

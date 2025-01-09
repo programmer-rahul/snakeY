@@ -1,27 +1,25 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  SNAKE_FOOD_COLORS,
-  SNAKE_HEAD_COLOR,
-  SNAKE_TAIL_COLOR,
-} from "../../utils/canvas";
-import GameOverPopup from "./GameOverPopup";
-import GameBtnControls from "../reusable/GameBtnControls";
-import GameBoardHeader from "./GameBoardHeader";
-import { Howl } from "howler";
-import goSound from "../../assets/gameover.wav";
-import gsSound from "../../assets/gamestart.mp3";
-import foodSound from "../../assets/food.mp3";
-import { Layer, Rect, Stage } from "react-konva";
 import Konva from "konva";
-import { GameStatusType } from "../../types/snake";
-import { useGameOptions } from "../../context/SnakeContext";
+
+import goSound from "../assets/gameover.wav";
+import gsSound from "../assets/gamestart.mp3";
+import foodSound from "../assets/food.mp3";
+
+import { Howl } from "howler";
+import { useGameOptions } from "../context/SnakeContext";
+import { GameStatusType } from "../types/snake";
+import { SNAKE_FOOD_COLORS } from "../constants/snake";
 
 export type SnakeDirectionType = "left" | "right" | "up" | "down";
-let snakeDirection: SnakeDirectionType = "right";
 
 const TotalCells = 20;
+let snakeDirection: SnakeDirectionType = "right";
 
-const GamePlayBoard = () => {
+const useSnake = ({
+  screenWindowRef,
+}: {
+  screenWindowRef: React.RefObject<HTMLDivElement>;
+}) => {
   // context
   let { userScore, setUserScore, userHighScore, setUserHighScore } =
     useGameOptions();
@@ -38,7 +36,6 @@ const GamePlayBoard = () => {
 
   // ref
   const canvasRef = useRef<Konva.Stage>(null);
-  const GameScreenRef = useRef<HTMLDivElement>(null);
   const snakeRef = useRef(isSnakeRunning);
 
   // variables
@@ -188,13 +185,13 @@ const GamePlayBoard = () => {
   // Set up canvas dimensions
   useEffect(() => {
     const calculateCanvasDimensions = () => {
-      if (!GameScreenRef.current || !canvasRef.current) return;
+      if (!screenWindowRef.current || !canvasRef.current) return;
 
       const windowHeight = window.innerHeight;
       const windowWidth = window.innerWidth;
 
-      const scoresPanel = GameScreenRef.current.children[0];
-      const btnControls = GameScreenRef.current.children[2];
+      const scoresPanel = screenWindowRef.current.children[0];
+      const btnControls = screenWindowRef.current.children[2];
 
       let availableHeight =
         windowHeight - (scoresPanel.clientHeight + btnControls.clientHeight);
@@ -216,7 +213,7 @@ const GamePlayBoard = () => {
     window.addEventListener("resize", calculateCanvasDimensions);
   }, []);
 
-  // Start animation when snakePos is running
+  // Start snake game when isSnakeRunning is true
   useEffect(() => {
     if (isSnakeRunning) {
       snakeRef.current = true;
@@ -268,102 +265,22 @@ const GamePlayBoard = () => {
     audioController.gameStart.play();
   };
 
-  // handler for controlbtn
-  const handleControlsBtnClick = (
-    event: React.MouseEvent<HTMLDivElement, MouseEvent>,
-  ) => {
-    switch (event.currentTarget.ariaLabel) {
-      case "up":
-        if (snakeDirection !== "down") snakeDirection = "up";
-        break;
-      case "down":
-        if (snakeDirection !== "up") snakeDirection = "down";
-        break;
-      case "left":
-        if (snakeDirection !== "right") snakeDirection = "left";
-        break;
-      case "right":
-        if (snakeDirection !== "left") snakeDirection = "right";
-        break;
-      default:
-        break;
-    }
+  return {
+    gameBoardWidth,
+    cellSize,
+    gameStatus,
+    isSnakeRunning,
+    snakePos,
+    snakeFood,
+    snakeFoodColorIndex,
+    canvasRef,
+    setGameStatus,
+    setIsSnakeRunning,
+    setSnakePos,
+    setSnakeFood,
+    setSnakeFoodColorIndex,
+    playAgainHandler,
   };
-
-  return (
-    <div
-      className="gameScreen flex max-h-svh min-h-svh w-full flex-col justify-between gap-2 overflow-hidden bg-gradient-to-r from-[#614385] to-[#520395]"
-      ref={GameScreenRef}
-    >
-      {/* Game score and controls */}
-      <GameBoardHeader />
-
-      {/* Game board */}
-      <div className="gameBoard relative self-center border-2 md:mb-6">
-        {/* Canvas */}
-        <Stage width={gameBoardWidth} height={gameBoardWidth} ref={canvasRef}>
-          {/* bg layer  */}
-          <Layer>
-            <Rect
-              width={gameBoardWidth}
-              height={gameBoardWidth}
-              fill={"rgb(34,29,42)"}
-            />
-          </Layer>
-
-          {/* player layer  */}
-          <Layer>
-            {/* food  */}
-            <Rect
-              width={cellSize}
-              height={cellSize}
-              fill={SNAKE_FOOD_COLORS[snakeFoodColorIndex]}
-              x={snakeFood.x}
-              y={snakeFood.y}
-              cornerRadius={6}
-              shadowBlur={15}
-              shadowColor={SNAKE_FOOD_COLORS[snakeFoodColorIndex]}
-            />
-
-            {/* snakePos  */}
-            {snakePos?.map((pos, index) => {
-              return (
-                <Rect
-                  key={index}
-                  width={cellSize}
-                  height={cellSize}
-                  fill={index ? SNAKE_TAIL_COLOR : SNAKE_HEAD_COLOR}
-                  x={pos.x}
-                  y={pos.y}
-                  cornerRadius={6}
-                  // shadowBlur={index ? 4 : 8}
-                  // shadowColor={SNAKE_FOOD_COLORS[snakeFoodColorIndex]}
-                />
-              );
-            })}
-          </Layer>
-        </Stage>
-
-        {/* Press key to start message */}
-        {!isSnakeRunning && gameStatus !== "game-over" && (
-          <div
-            className="presskeytostart absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-semibold text-slate-200 "
-            style={{ whiteSpace: "nowrap" }}
-          >
-            Press any key to start
-          </div>
-        )}
-
-        {/* Game over popup */}
-        {gameStatus === "game-over" && (
-          <GameOverPopup playAgainHandler={playAgainHandler} />
-        )}
-      </div>
-
-      {/* Button controls */}
-      <GameBtnControls handleControlsBtnClick={handleControlsBtnClick} />
-    </div>
-  );
 };
 
-export default GamePlayBoard;
+export default useSnake;

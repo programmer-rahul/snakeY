@@ -1,7 +1,7 @@
-import Button from "../ui/Button";
 import { useNavigate } from "react-router-dom";
+import Button from "../components/ui/Button";
 
-const GameHomeScreen = () => {
+const HomeScreen = () => {
   const navigate = useNavigate();
 
   const startHandle = () => {
@@ -26,4 +26,4 @@ const GameHomeScreen = () => {
     </div>
   );
 };
-export default GameHomeScreen;
+export default HomeScreen;

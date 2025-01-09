@@ -1,7 +1,7 @@
 import { useNavigate } from "react-router-dom";
-import { useGameOptions } from "../../context/SnakeContext";
+import { useGameOptions } from "../../../context/SnakeContext";
 
-const GameBoardHeader = () => {
+const SnakeGameHeader = () => {
   const { gameSound, setGameSound, userHighScore, userScore } =
     useGameOptions();
 
@@ -74,4 +74,4 @@ const GameBoardHeader = () => {
     </div>
   );
 };
-export default GameBoardHeader;
+export default SnakeGameHeader;
