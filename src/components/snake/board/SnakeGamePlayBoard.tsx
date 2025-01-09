@@ -7,23 +7,27 @@ import RenderSnakeFood from "./canvas/RenderSnakeFood";
 import useSnake, { SnakeDirectionType } from "../../../hooks/useSnake";
 import { Dispatch, SetStateAction, useState } from "react";
 import { KonvaEventObject, Node, NodeConfig } from "konva/lib/Node";
+import { GameStatusType } from "../../../types/snake";
 
 const SnakeGamePlayBoard = ({
   screenWindowRef,
   isSnakeRunning,
   setIsSnakeRunning,
   snakeDirectionRef,
+  gameStatus,
+  setGameStatus,
 }: {
   screenWindowRef: React.RefObject<HTMLDivElement>;
   isSnakeRunning: boolean;
   setIsSnakeRunning: Dispatch<SetStateAction<boolean>>;
   snakeDirectionRef: React.MutableRefObject<SnakeDirectionType>;
+  gameStatus: GameStatusType;
+  setGameStatus: React.Dispatch<React.SetStateAction<GameStatusType>>;
 }) => {
   const {
     gameBoardWidth,
     canvasRef,
     cellSize,
-    gameStatus,
     snakeFood,
     snakeFoodColorIndex,
     playAgainHandler,
@@ -33,6 +37,8 @@ const SnakeGamePlayBoard = ({
     isSnakeRunning: isSnakeRunning,
     setIsSnakeRunning: setIsSnakeRunning,
     snakeDirectionRef: snakeDirectionRef,
+    gameStatus: gameStatus,
+    setGameStatus: setGameStatus,
   });
 
   const [startPoint, setStartPoint] = useState<{ x: number; y: number } | null>(
@@ -88,7 +94,14 @@ const SnakeGamePlayBoard = ({
     <>
       <div
         className="gameBoard relative self-center border-2 border-zinc-400/60 md:mb-6"
-        style={{ opacity: gameStatus === "in-progress" ? 1 : 0.8 }}
+        style={{
+          opacity:
+            gameStatus === "in-progress"
+              ? 1
+              : gameStatus === "game-over"
+                ? 0.4
+                : 0.8,
+        }}
       >
         {/* Game Canvas */}
         <Stage

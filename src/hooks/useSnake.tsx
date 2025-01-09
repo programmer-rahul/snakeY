@@ -19,11 +19,15 @@ const useSnake = ({
   isSnakeRunning,
   setIsSnakeRunning,
   snakeDirectionRef,
+  gameStatus,
+  setGameStatus,
 }: {
   screenWindowRef: React.RefObject<HTMLDivElement>;
   isSnakeRunning: boolean;
   setIsSnakeRunning: Dispatch<SetStateAction<boolean>>;
   snakeDirectionRef: React.MutableRefObject<SnakeDirectionType>;
+  gameStatus: GameStatusType;
+  setGameStatus: React.Dispatch<React.SetStateAction<GameStatusType>>;
 }) => {
   // context
   let { userScore, setUserScore, userHighScore, setUserHighScore } =
@@ -32,7 +36,6 @@ const useSnake = ({
   //   states
   const [gameBoardWidth, setGameBoardWidth] = useState(400);
   const [cellSize, setCellSize] = useState(gameBoardWidth / TotalCells);
-  const [gameStatus, setGameStatus] = useState<GameStatusType>("idle");
 
   let [snakePos, setSnakePos] = useState<{ x: number; y: number }[]>([]);
   let [snakeFood, setSnakeFood] = useState({ x: 0, y: 0 });

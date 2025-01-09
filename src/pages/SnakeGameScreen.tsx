@@ -3,11 +3,13 @@ import SnakeGameHeader from "../components/snake/header/SnakeGameHeader";
 import SnakeGamePlayBoard from "../components/snake/board/SnakeGamePlayBoard";
 import GameBtnControls from "../components/snake/controls/GameBtnControls";
 import { SnakeDirectionType } from "../hooks/useSnake";
+import { GameStatusType } from "../types/snake";
 
 const SnakeGameScreen = () => {
   const screenWindowRef = useRef<HTMLDivElement>(null);
   let [isSnakeRunning, setIsSnakeRunning] = useState(false);
   const snakeDirectionRef = useRef<SnakeDirectionType>("RIGHT");
+  const [gameStatus, setGameStatus] = useState<GameStatusType>("idle");
 
   return (
     <div
@@ -15,7 +17,9 @@ const SnakeGameScreen = () => {
       ref={screenWindowRef}
     >
       {/* Snake Game Header */}
-      <SnakeGameHeader />
+      <div style={{ opacity: gameStatus === "game-over" ? 0.4 : 1 }}>
+        <SnakeGameHeader />
+      </div>
 
       {/* Game board */}
       <SnakeGamePlayBoard
@@ -23,14 +27,18 @@ const SnakeGameScreen = () => {
         isSnakeRunning={isSnakeRunning}
         setIsSnakeRunning={setIsSnakeRunning}
         snakeDirectionRef={snakeDirectionRef}
+        gameStatus={gameStatus}
+        setGameStatus={setGameStatus}
       />
 
-      {/* Button controls */}
-      <GameBtnControls
-        isSnakeRunning={isSnakeRunning}
-        setIsSnakeRunning={setIsSnakeRunning}
-        snakeDirectionRef={snakeDirectionRef}
-      />
+      <div style={{ opacity: gameStatus === "game-over" ? 0.4 : 1 }}>
+        {/* Button controls */}
+        <GameBtnControls
+          isSnakeRunning={isSnakeRunning}
+          setIsSnakeRunning={setIsSnakeRunning}
+          snakeDirectionRef={snakeDirectionRef}
+        />
+      </div>
     </div>
   );
 };
