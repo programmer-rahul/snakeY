@@ -1,4 +1,5 @@
 import { Layer, Rect } from "react-konva";
+import { SNAKE_CANVAS_BG } from "../../../../constants/snake";
 
 const RenderSnakeBoardBg = ({ gameBoardWidth }: { gameBoardWidth: number }) => {
   return (
@@ -6,7 +7,7 @@ const RenderSnakeBoardBg = ({ gameBoardWidth }: { gameBoardWidth: number }) => {
       <Rect
         width={gameBoardWidth}
         height={gameBoardWidth}
-        fill={"rgb(34,29,42)"}
+        fill={SNAKE_CANVAS_BG}
       />
     </Layer>
   );

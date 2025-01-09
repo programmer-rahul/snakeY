@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useEffect, useRef, useState } from "react";
 import Konva from "konva";
 
 import goSound from "../assets/gameover.wav";
@@ -10,15 +10,20 @@ import { useGameOptions } from "../context/SnakeContext";
 import { GameStatusType } from "../types/snake";
 import { SNAKE_FOOD_COLORS } from "../constants/snake";
 
-export type SnakeDirectionType = "left" | "right" | "up" | "down";
+export type SnakeDirectionType = "LEFT" | "RIGHT" | "UP" | "DOWN";
 
-const TotalCells = 20;
-let snakeDirection: SnakeDirectionType = "right";
+const TotalCells = 16;
 
 const useSnake = ({
   screenWindowRef,
+  isSnakeRunning,
+  setIsSnakeRunning,
+  snakeDirectionRef,
 }: {
   screenWindowRef: React.RefObject<HTMLDivElement>;
+  isSnakeRunning: boolean;
+  setIsSnakeRunning: Dispatch<SetStateAction<boolean>>;
+  snakeDirectionRef: React.MutableRefObject<SnakeDirectionType>;
 }) => {
   // context
   let { userScore, setUserScore, userHighScore, setUserHighScore } =
@@ -29,7 +34,6 @@ const useSnake = ({
   const [cellSize, setCellSize] = useState(gameBoardWidth / TotalCells);
   const [gameStatus, setGameStatus] = useState<GameStatusType>("idle");
 
-  let [isSnakeRunning, setIsSnakeRunning] = useState(false);
   let [snakePos, setSnakePos] = useState<{ x: number; y: number }[]>([]);
   let [snakeFood, setSnakeFood] = useState({ x: 0, y: 0 });
   let [snakeFoodColorIndex, setSnakeFoodColorIndex] = useState(0);
@@ -145,17 +149,17 @@ const useSnake = ({
   const calculateNewHeadPosition = () => {
     const snakeHead = { ...snakePos[0] };
 
-    switch (snakeDirection) {
-      case "left":
+    switch (snakeDirectionRef.current) {
+      case "LEFT":
         snakeHead.x -= cellSize;
         break;
-      case "right":
+      case "RIGHT":
         snakeHead.x += cellSize;
         break;
-      case "up":
+      case "UP":
         snakeHead.y -= cellSize;
         break;
-      case "down":
+      case "DOWN":
         snakeHead.y += cellSize;
         break;
       default:
@@ -217,6 +221,7 @@ const useSnake = ({
   useEffect(() => {
     if (isSnakeRunning) {
       snakeRef.current = true;
+      setGameStatus("in-progress");
       animateCanvas();
     }
     // Add keydown event listener for handling user inputs
@@ -239,16 +244,20 @@ const useSnake = ({
     if (!isSnakeRunning) return;
     switch (event.key) {
       case "ArrowUp":
-        if (snakeDirection !== "down") snakeDirection = "up";
+        if (snakeDirectionRef.current !== "DOWN")
+          snakeDirectionRef.current = "UP";
         break;
       case "ArrowDown":
-        if (snakeDirection !== "up") snakeDirection = "down";
+        if (snakeDirectionRef.current !== "UP")
+          snakeDirectionRef.current = "DOWN";
         break;
       case "ArrowLeft":
-        if (snakeDirection !== "right") snakeDirection = "left";
+        if (snakeDirectionRef.current !== "RIGHT")
+          snakeDirectionRef.current = "LEFT";
         break;
       case "ArrowRight":
-        if (snakeDirection !== "left") snakeDirection = "right";
+        if (snakeDirectionRef.current !== "LEFT")
+          snakeDirectionRef.current = "RIGHT";
         break;
       default:
         break;
@@ -258,7 +267,7 @@ const useSnake = ({
   // play again btn handler
   const playAgainHandler = () => {
     resetSnakePosition();
-    snakeDirection = "right";
+    snakeDirectionRef.current = "RIGHT";
     setGameStatus("in-progress");
     setIsSnakeRunning(true);
     setUserScore(0);
@@ -280,6 +289,7 @@ const useSnake = ({
     setSnakeFood,
     setSnakeFoodColorIndex,
     playAgainHandler,
+    snakeDirectionRef,
   };
 };
 

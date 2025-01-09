@@ -9,7 +9,7 @@ const GameOverPopup = ({ playAgainHandler }: GameOverPopupProps) => {
   const { userScore } = useGameOptions();
 
   return (
-    <div className="absolute left-1/2 top-1/2 flex min-h-80 min-w-72 -translate-x-1/2 -translate-y-1/2 flex-col justify-around gap-12 rounded-md bg-zinc-300 p-6 shadow-xl">
+    <div className="absolute left-1/2 top-1/2 flex min-h-80 min-w-72 -translate-x-1/2 -translate-y-1/2 flex-col justify-around gap-12 rounded-md bg-zinc-300 p-6 shadow-xl z-10">
       <div className="text-center text-3xl font-bold text-gray-800">
         Game Over
       </div>

@@ -8,3 +8,5 @@ export const SNAKE_FOOD_COLORS = [
   "rgb(79,70,229)",
   "rgb(202,138,4)",
 ];
+
+export const SNAKE_CANVAS_BG = "rgb(44,39,62)";

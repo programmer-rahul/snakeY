@@ -9,13 +9,15 @@ const HomeScreen = () => {
   };
 
   return (
-    <div className="welcomeScreen pattern flex h-screen flex-col items-center justify-center bg-gradient-to-r from-[#614385] to-[#516395]">
-      <div className="flex w-auto flex-col items-center gap-8 rounded-xl bg-gray-300 px-8 py-40 shadow-2xl">
+    <div className="welcomeScreen flex h-svh max-h-svh w-screen flex-col items-center justify-center bg-gradient-to-b from-zinc-600 to-zinc-800 ">
+      <div className="hidde flex h-3/5 w-4/5 flex-col items-center justify-center gap-8 rounded-xl bg-gray-300 p-2 shadow-2xl md:w-[32rem]">
         <div className="space-y-4">
-          <h2 className="text-6xl font-bold text-gray-800">Snake Game</h2>
-          <p className="w-96 text-center leading-5 text-zinc-800">
+          <h2 className="text-center text-3xl font-bold text-gray-800 sm:text-6xl">
+            Snake Game
+          </h2>
+          <p className="w-full px-2 text-center text-base leading-5 text-zinc-800 sm:text-xl">
             Enjoy the classic Snake game. Navigate your snake to eat food and
-            grow longer. Avoid hitting the walls or yourself!
+            grow longer.
           </p>
         </div>
 

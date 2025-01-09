@@ -1,48 +1,58 @@
+import { Dispatch, SetStateAction } from "react";
 import { SnakeDirectionType } from "../../../hooks/useSnake";
 
-const GameBtnControls = ({}: {}) => {
+const GameBtnControls = ({
+  isSnakeRunning,
+  setIsSnakeRunning,
+  snakeDirectionRef,
+}: {
+  isSnakeRunning: boolean;
+  setIsSnakeRunning: Dispatch<SetStateAction<boolean>>;
+  snakeDirectionRef: React.MutableRefObject<SnakeDirectionType>;
+}) => {
   // handler for controlbtn
   const handleControlsBtnClick = (
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => {
     switch (event.currentTarget.ariaLabel) {
-      // case "up":
-      //   if (snakeDirection !== "down") snakeDirection = "up";
-      //   break;
-      // case "down":
-      //   if (snakeDirection !== "up") snakeDirection = "down";
-      //   break;
-      // case "left":
-      //   if (snakeDirection !== "right") snakeDirection = "left";
-      //   break;
-      // case "right":
-      //   if (snakeDirection !== "left") snakeDirection = "right";
-      //   break;
+      case "UP":
+        if (snakeDirectionRef.current !== "DOWN")
+          snakeDirectionRef.current = "UP";
+        break;
+      case "DOWN":
+        if (snakeDirectionRef.current !== "UP")
+          snakeDirectionRef.current = "DOWN";
+        break;
+      case "LEFT":
+        if (snakeDirectionRef.current !== "RIGHT")
+          snakeDirectionRef.current = "LEFT";
+        break;
+      case "RIGHT":
+        if (snakeDirectionRef.current !== "LEFT")
+          snakeDirectionRef.current = "RIGHT";
+        break;
       default:
         break;
+    }
+    if (!isSnakeRunning) {
+      setIsSnakeRunning(true);
+      snakeDirectionRef.current = "RIGHT";
     }
   };
 
   return (
-    <div className="bntControls flex h-64 w-full flex-col items-center justify-center py-4 md:hidden">
-      <div className="grid h-full grid-cols-3 grid-rows-3 place-content-center place-items-center rounded-md border-2 border-purple-700 p-2 text-slate-300">
-        <ControlBtn
-          rotate={0}
-          handleControlsBtnClick={handleControlsBtnClick}
-        />
-        <ControlBtn
-          rotate={90}
-          handleControlsBtnClick={handleControlsBtnClick}
-        />
-        <ControlBtn
-          rotate={180}
-          handleControlsBtnClick={handleControlsBtnClick}
-        />
-        <ControlBtn
-          rotate={270}
-          handleControlsBtnClick={handleControlsBtnClick}
-        />
-      </div>
+    <div className="mx-auto grid h-48 max-h-52 w-48 max-w-52 grid-cols-3 grid-rows-3 place-content-center place-items-center rounded-md border bg-zinc-500/50 p-2 sm:hidden">
+      <ControlBtn rotate={0} handleControlsBtnClick={handleControlsBtnClick} />
+
+      <ControlBtn rotate={90} handleControlsBtnClick={handleControlsBtnClick} />
+      <ControlBtn
+        rotate={180}
+        handleControlsBtnClick={handleControlsBtnClick}
+      />
+      <ControlBtn
+        rotate={270}
+        handleControlsBtnClick={handleControlsBtnClick}
+      />
     </div>
   );
 };
@@ -57,7 +67,7 @@ const ControlBtn = ({
     event: React.MouseEvent<HTMLDivElement, MouseEvent>,
   ) => void;
 }) => {
-  let type: SnakeDirectionType = "right";
+  let type: SnakeDirectionType = "RIGHT";
   let gridAlign = {
     gridColumn: 1,
     gridRow: 1,
@@ -66,33 +76,33 @@ const ControlBtn = ({
   if (rotate === 0) {
     gridAlign.gridColumn = 1;
     gridAlign.gridRow = 2;
-    type = "left";
+    type = "LEFT";
   }
   if (rotate === 90) {
     gridAlign.gridColumn = 2;
     gridAlign.gridRow = 1;
-    type = "up";
+    type = "UP";
   }
   if (rotate === 180) {
     gridAlign.gridColumn = 3;
     gridAlign.gridRow = 2;
-    type = "right";
+    type = "RIGHT";
   }
   if (rotate === 270) {
     gridAlign.gridColumn = 2;
     gridAlign.gridRow = 3;
-    type = "down";
+    type = "DOWN";
   }
 
   return (
     <div
       style={gridAlign}
-      className="h-full cursor-pointer"
+      className="h-full cursor-pointer rounded-md bg-zinc-200/80 hover:bg-zinc-100"
       onClick={handleControlsBtnClick}
       aria-label={type}
     >
       <svg
-        fill="currentColor"
+        fill="rgb(34,29,42,.6)"
         viewBox="0 0 56 56"
         transform={`rotate(${rotate + 90})`}
         className="h-full w-full"
