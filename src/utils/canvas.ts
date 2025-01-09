@@ -17,8 +17,8 @@ const drawCanvasBg = ({ cellSize, CanvasWidth, context }: DrawCanvasBg) => {
   }
 };
 
-const SNAKE_HEAD_COLOR = "rgb(226, 232, 240)";
-const SNAKE_TAIL_COLOR = "rgb(203 213 225)";
+export const SNAKE_HEAD_COLOR = "rgb(226,232,240)";
+export const SNAKE_TAIL_COLOR = "rgb(200,210,220)";
 
 const drawSnakeOnCanvas = ({
   snake,
@@ -44,11 +44,11 @@ const drawSnakeOnCanvas = ({
 };
 
 export const SNAKE_FOOD_COLORS = [
-  "rgb(147 51 234)",
-  "rgb(101 163 13)",
-  "rgb(225 29 72)",
-  "rgb(79 70 229)",
-  "rgb(202 138 4)",
+  "rgb(147,51,234)",
+  "rgb(101,163,13)",
+  "rgb(225,29,72)",
+  "rgb(79,70,229)",
+  "rgb(202,138,4)",
 ];
 
 const drawSnakeFoodOnCanvas = ({

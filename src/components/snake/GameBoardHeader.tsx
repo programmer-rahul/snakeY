@@ -1,17 +1,22 @@
-import { useSnake } from "../../context/SnakeContext";
+import { useNavigate } from "react-router-dom";
+import { useGameOptions } from "../../context/SnakeContext";
 
 const GameBoardHeader = () => {
-  const { gameSound, setGameSound, userHighScore, userScore } = useSnake();
+  const { gameSound, setGameSound, userHighScore, userScore } =
+    useGameOptions();
+
+  const Navigate = useNavigate();
 
   return (
     <div className="scores flex min-h-[50px] w-full items-center justify-between p-2">
       {/* Back and sound controls */}
 
       <div className="flex items-center gap-6">
-        <a
-          href="/"
+        <button
           className={`goBack w-10 cursor-pointer text-slate-200`}
-          onClick={() => {}}
+          onClick={() => {
+            Navigate("/");
+          }}
         >
           <svg
             viewBox="0 0 24 24"
@@ -27,7 +32,7 @@ const GameBoardHeader = () => {
               strokeLinejoin="round"
             />
           </svg>
-        </a>
+        </button>
         <div
           className={`soundControl w-8 cursor-pointer ${gameSound ? "text-slate-200" : "text-slate-600"}`}
           onClick={() => {

@@ -1,11 +1,6 @@
 import { createContext, ReactNode, useContext, useState } from "react";
 
-type GameStatusType = "idle" | "in-progress" | "game-over";
-
 interface ContextInterface {
-  gameStatus: GameStatusType;
-  setGameStatus: React.Dispatch<React.SetStateAction<GameStatusType>>;
-
   userScore: number;
   setUserScore: React.Dispatch<React.SetStateAction<number>>;
 
@@ -16,10 +11,7 @@ interface ContextInterface {
   setGameSound: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const SnakeContext = createContext<ContextInterface>({
-  gameStatus: "idle",
-  setGameStatus: () => null,
-
+const GameOptionsContext = createContext<ContextInterface>({
   userScore: 0,
   setUserScore: () => null,
 
@@ -30,25 +22,20 @@ const SnakeContext = createContext<ContextInterface>({
   setGameSound: () => null,
 });
 
-const useSnake = () => useContext(SnakeContext);
+const useGameOptions = () => useContext(GameOptionsContext);
 
-const SnakeProvider = ({ children }: { children: ReactNode }) => {
-  const [gameStatus, setGameStatus] = useState<GameStatusType>("in-progress");
-
+const GameOptionsProvider = ({ children }: { children: ReactNode }) => {
   const [userScore, setUserScore] = useState(0);
   const [userHighScore, setUserHighScore] = useState(() => {
     const highScore = localStorage.getItem("snakeGameHighScore");
-    console.log("highScore", highScore);
     return highScore ? parseInt(highScore) : 0;
   });
 
   const [gameSound, setGameSound] = useState(true);
 
   return (
-    <SnakeContext.Provider
+    <GameOptionsContext.Provider
       value={{
-        gameStatus,
-        setGameStatus,
         userScore,
         setUserScore,
         userHighScore,
@@ -58,8 +45,8 @@ const SnakeProvider = ({ children }: { children: ReactNode }) => {
       }}
     >
       {children}
-    </SnakeContext.Provider>
+    </GameOptionsContext.Provider>
   );
 };
 
-export { SnakeProvider, useSnake };
+export { GameOptionsProvider, useGameOptions };

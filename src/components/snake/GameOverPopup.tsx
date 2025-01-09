@@ -1,4 +1,4 @@
-import { useSnake } from "../../context/SnakeContext";
+import { useGameOptions } from "../../context/SnakeContext";
 import Button from "../ui/Button";
 
 interface GameOverPopupProps {
@@ -6,7 +6,7 @@ interface GameOverPopupProps {
 }
 
 const GameOverPopup = ({ playAgainHandler }: GameOverPopupProps) => {
-  const { userScore } = useSnake();
+  const { userScore } = useGameOptions();
 
   return (
     <div className="absolute left-1/2 top-1/2 flex min-h-80 min-w-72 -translate-x-1/2 -translate-y-1/2 flex-col justify-around gap-12 rounded-md bg-slate-200 p-6">

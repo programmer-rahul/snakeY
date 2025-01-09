@@ -1,15 +1,11 @@
-import { useSnake } from "../../context/SnakeContext";
 import Button from "../ui/Button";
-import gsSound from "../../assets/gamestart.mp3";
+import { useNavigate } from "react-router-dom";
 
 const GameHomeScreen = () => {
-  const { setGameStatus } = useSnake();
-
-  const gameStart = new Howl({ src: [gsSound.toString()] });
+  const navigate = useNavigate();
 
   const startHandle = () => {
-    setGameStatus("in-progress");
-    gameStart.play();
+    navigate("/play");
   };
 
   return (

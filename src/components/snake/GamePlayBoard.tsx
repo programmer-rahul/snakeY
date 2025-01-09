@@ -1,6 +1,9 @@
 import { useEffect, useRef, useState } from "react";
-import { useSnake } from "../../context/SnakeContext";
-import { SNAKE_FOOD_COLORS } from "../../utils/canvas";
+import {
+  SNAKE_FOOD_COLORS,
+  SNAKE_HEAD_COLOR,
+  SNAKE_TAIL_COLOR,
+} from "../../utils/canvas";
 import GameOverPopup from "./GameOverPopup";
 import GameBtnControls from "../reusable/GameBtnControls";
 import GameBoardHeader from "./GameBoardHeader";
@@ -10,6 +13,8 @@ import gsSound from "../../assets/gamestart.mp3";
 import foodSound from "../../assets/food.mp3";
 import { Layer, Rect, Stage } from "react-konva";
 import Konva from "konva";
+import { GameStatusType } from "../../types/snake";
+import { useGameOptions } from "../../context/SnakeContext";
 
 export type SnakeDirectionType = "left" | "right" | "up" | "down";
 let snakeDirection: SnakeDirectionType = "right";
@@ -18,20 +23,15 @@ const TotalCells = 20;
 
 const GamePlayBoard = () => {
   // context
-  let {
-    gameStatus,
-    setGameStatus,
-    userScore,
-    setUserScore,
-    userHighScore,
-    setUserHighScore,
-  } = useSnake();
+  let { userScore, setUserScore, userHighScore, setUserHighScore } =
+    useGameOptions();
 
   //   states
   const [gameBoardWidth, setGameBoardWidth] = useState(400);
   const [cellSize, setCellSize] = useState(gameBoardWidth / TotalCells);
-  const [isSnakeRunning, setIsSnakeRunning] = useState(false);
+  const [gameStatus, setGameStatus] = useState<GameStatusType>("idle");
 
+  let [isSnakeRunning, setIsSnakeRunning] = useState(false);
   let [snakePos, setSnakePos] = useState<{ x: number; y: number }[]>([]);
   let [snakeFood, setSnakeFood] = useState({ x: 0, y: 0 });
   let [snakeFoodColorIndex, setSnakeFoodColorIndex] = useState(0);
@@ -221,47 +221,37 @@ const GamePlayBoard = () => {
     if (isSnakeRunning) {
       snakeRef.current = true;
       animateCanvas();
-      // moveSnake()
     }
     // Add keydown event listener for handling user inputs
     window.addEventListener("keydown", handleUserKeyInput);
-    // Remove event listener on component unmount
     return () => {
+      // Remove event listener on component unmount
       window.removeEventListener("keydown", handleUserKeyInput);
     };
   }, [isSnakeRunning]);
 
   // Handle user inputs
   const handleUserKeyInput = (event: KeyboardEvent) => {
+    // start game if not running
+    if (gameStatus === "idle") {
+      setGameStatus("in-progress");
+      setIsSnakeRunning(true);
+      isSnakeRunning = true;
+    }
+
+    if (!isSnakeRunning) return;
     switch (event.key) {
       case "ArrowUp":
-        console.log("statu", gameStatus);
-        if (gameStatus === "in-progress") {
-          if (!isSnakeRunning) setIsSnakeRunning(true);
-          // Prevent changing direction if currently moving downwards
-          if (snakeDirection !== "down") snakeDirection = "up";
-        }
+        if (snakeDirection !== "down") snakeDirection = "up";
         break;
       case "ArrowDown":
-        if (gameStatus === "in-progress") {
-          if (!isSnakeRunning) setIsSnakeRunning(true);
-          // Prevent changing direction if currently moving upwards
-          if (snakeDirection !== "up") snakeDirection = "down";
-        }
+        if (snakeDirection !== "up") snakeDirection = "down";
         break;
       case "ArrowLeft":
-        if (gameStatus === "in-progress") {
-          if (!isSnakeRunning) setIsSnakeRunning(true);
-          // Prevent changing direction if currently moving rightwards
-          if (snakeDirection !== "right") snakeDirection = "left";
-        }
+        if (snakeDirection !== "right") snakeDirection = "left";
         break;
       case "ArrowRight":
-        if (gameStatus === "in-progress") {
-          if (!isSnakeRunning) setIsSnakeRunning(true);
-          // Prevent changing direction if currently moving leftwards
-          if (snakeDirection !== "left") snakeDirection = "right";
-        }
+        if (snakeDirection !== "left") snakeDirection = "right";
         break;
       default:
         break;
@@ -271,10 +261,10 @@ const GamePlayBoard = () => {
   // play again btn handler
   const playAgainHandler = () => {
     resetSnakePosition();
-    setGameStatus("in-progress");
-    setUserScore(0);
-    setIsSnakeRunning(true);
     snakeDirection = "right";
+    setGameStatus("in-progress");
+    setIsSnakeRunning(true);
+    setUserScore(0);
     audioController.gameStart.play();
   };
 
@@ -284,32 +274,16 @@ const GamePlayBoard = () => {
   ) => {
     switch (event.currentTarget.ariaLabel) {
       case "up":
-        if (gameStatus === "in-progress") {
-          if (!isSnakeRunning) setIsSnakeRunning(true);
-          // Prevent changing direction if currently moving downwards
-          if (snakeDirection !== "down") snakeDirection = "up";
-        }
+        if (snakeDirection !== "down") snakeDirection = "up";
         break;
       case "down":
-        if (gameStatus === "in-progress") {
-          if (!isSnakeRunning) setIsSnakeRunning(true);
-          // Prevent changing direction if currently moving upwards
-          if (snakeDirection !== "up") snakeDirection = "down";
-        }
+        if (snakeDirection !== "up") snakeDirection = "down";
         break;
       case "left":
-        if (gameStatus === "in-progress") {
-          if (!isSnakeRunning) setIsSnakeRunning(true);
-          // Prevent changing direction if currently moving rightwards
-          if (snakeDirection !== "right") snakeDirection = "left";
-        }
+        if (snakeDirection !== "right") snakeDirection = "left";
         break;
       case "right":
-        if (gameStatus === "in-progress") {
-          if (!isSnakeRunning) setIsSnakeRunning(true);
-          // Prevent changing direction if currently moving leftwards
-          if (snakeDirection !== "left") snakeDirection = "right";
-        }
+        if (snakeDirection !== "left") snakeDirection = "right";
         break;
       default:
         break;
@@ -346,6 +320,9 @@ const GamePlayBoard = () => {
               fill={SNAKE_FOOD_COLORS[snakeFoodColorIndex]}
               x={snakeFood.x}
               y={snakeFood.y}
+              cornerRadius={6}
+              shadowBlur={15}
+              shadowColor={SNAKE_FOOD_COLORS[snakeFoodColorIndex]}
             />
 
             {/* snakePos  */}
@@ -355,9 +332,12 @@ const GamePlayBoard = () => {
                   key={index}
                   width={cellSize}
                   height={cellSize}
-                  fill={"rgb(226, 232, 240)"}
+                  fill={index ? SNAKE_TAIL_COLOR : SNAKE_HEAD_COLOR}
                   x={pos.x}
                   y={pos.y}
+                  cornerRadius={6}
+                  // shadowBlur={index ? 4 : 8}
+                  // shadowColor={SNAKE_FOOD_COLORS[snakeFoodColorIndex]}
                 />
               );
             })}
@@ -367,10 +347,10 @@ const GamePlayBoard = () => {
         {/* Press key to start message */}
         {!isSnakeRunning && gameStatus !== "game-over" && (
           <div
-            className="presskeytostart absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl font-semibold text-slate-200 "
+            className="presskeytostart absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-2xl font-semibold text-slate-200 "
             style={{ whiteSpace: "nowrap" }}
           >
-            Press control keys to start
+            Press any key to start
           </div>
         )}
 
